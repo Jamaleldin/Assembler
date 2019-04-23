@@ -44,6 +44,10 @@ int main()
     opCode.insert({"WD","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
     opCode.insert({"TIX","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
     opCode.insert({"TIXR","^[ABLSTX]$}"});
+    opCode.insert({"BYTE","^(((?i)[X]\\'[a-f]{0,15}\\')|((?i)[C]\\'[a-zA-Z0-9]{0,15}\\'))$"});
+    opCode.insert({"RESB","^[0-9]{1,18}$"});
+    opCode.insert({"WORD","^[0-9]{1,18}$"});
+    opCode.insert({"RESW","^[0-9]{1,18}$"});
 
     /*READING FROM FILE
     ===================*/
@@ -56,7 +60,7 @@ int main()
         }
         inputFile.close();
     }
-    regex r{"^([a-zA-z0-9]{1,8})?(\\s*?)((\\+[A-Z]{1,5})|([A-Z]{1,6}))(\\s+)([@|#]?([a-zA-z0-9]+)|([a-zA-z0-9]+\\,{1}[X])|([ABLSTX]\\,{1}[ABLSTX]))$"};
+    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)((\\+[A-Z]{1,5})|([A-Z]{1,6}))(\\s+)([@|#]?([a-zA-z0-9]+)|([a-zA-z0-9]+\\,{1}[X])|([ABLSTX]\\,{1}[ABLSTX]))$"};
     if(regex_match(lines.at(0),r)){
             cout<<"MATCH";
     }
