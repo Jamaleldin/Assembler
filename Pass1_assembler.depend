@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1556043534 source:d:\myfolders\csed\c_projects\systems programming\assembler\main.cpp
+	<iostream>
+	<bits/stdc++.h>
+
