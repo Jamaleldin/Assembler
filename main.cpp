@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bits/stdc++.h>
+#include <regex>
 
 using namespace std;
 
@@ -100,6 +101,7 @@ int main()
     //opCode.insert({"WORD","^[0-9]{1,18}$"});
     opCode["RESW"] = "^[0-9]{1,18}$";
     //opCode.insert({"RESW","^[0-9]{1,18}$"});
+    opCode["END"] = "^$";
 
     /*READING FROM FILE
     ===================*/
@@ -112,17 +114,35 @@ int main()
         }
         inputFile.close();
     }
-    cout<<lines.at(0) + "\n";
-    cout<<lines.at(1);
+   /* cout<<lines.at(0) + "\n";
+    //cout<<lines.at(1);
     if (opCode.find("aaa") != opCode.end()){
         cout<<opCode.at("ffd");
     } else {
     cout<<"ERROR";
-    }
+    }*/
 
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)((\\+[A-Z]{1,5})|([A-Z]{1,6}))(\\s+)([@|#]?([a-zA-z0-9]+)|([a-zA-z0-9]+\\,{1}[X])|([ABLSTX]\\,{1}[ABLSTX]))$"};
-    if(regex_match(lines.at(0),r)){
-            cout<<"MATCH";
+    //regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)|((?i)rsub)$"};
+    regex secondFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+([ABLSTX]\\s*,\\s*[ABLSTX])\\s*$",std::regex_constants::icase);
+    regex thirdFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex forthFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?((\\+)([a-z]{1,5}))\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex returnSub("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?((\\+)?(rsub))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex endProg("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?(end)\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex startProg("^\\s*([^\\s.@#]{1,8}?\\s+){1}(start)\\s+([a-f0-9]{1,18})\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    if(regex_match(lines.at(0),startProg)){
+            cout<<"start!";
+    }else if(regex_match(lines.at(0),endProg)){
+        cout<<"end!";
+    }else if(regex_match(lines.at(0),returnSub)){
+        cout<<"return!";
+    }else if(regex_match(lines.at(0),secondFormate)){
+        cout<<"2nd formate!";
+    }else if(regex_match(lines.at(0),thirdFormate)){
+        cout<<"3rd formate!";
+    }else if(regex_match(lines.at(0),forthFormate)){
+        cout<<"4th formate!";
+    }else{
+        cout<<"error";
     }
     return 0;
 }
