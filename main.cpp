@@ -4,15 +4,86 @@
 
 using namespace std;
 
-bool checkingRegex (string line){
-regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)((\\+[A-Z]{1,5})|([A-Z]{1,6}))(\\s+)([@|#]?([a-zA-z0-9]+)|([a-zA-z0-9]+\\,{1}[X])|([ABLSTX]\\,{1}[ABLSTX]))$"};
+bool checkingRegex (string line, string reg)
+{
+    regex r{reg};
 
-if(regex_match(line,r)){
-            return true;
-    } else {
-    return false;
+    if(regex_match(line,r))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
+
+string getFirstGroup(string line)
+{
+    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
+
+    smatch match;
+
+    if (regex_search(line, match, r) == true)
+    {
+        return match.str(1);
+    }
+    else
+    {
+        return nullptr;
+    }
+
+}
+
+string getSecondGroup(string line)
+{
+    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
+
+    smatch match;
+
+    if (regex_search(line, match, r) == true)
+    {
+        return match.str(5);
+    }
+    else
+    {
+        return nullptr;
+    }
+
+}
+
+
+string getThirdGroup(string line)
+{
+    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
+
+    smatch match;
+
+    if (regex_search(line, match, r) == true)
+    {
+        return match.str(9);
+    }
+    else
+    {
+        return nullptr;
+    }
+
+}
+
+bool commentChecker(string mainStr)
+{
+    // std::string::find returns 0 if toMatch is found at starting
+    if(mainStr.find(".") == 0)
+        return true;
+    else
+        return false;
+}
+
+int getHex(string hexstr)
+{
+    return (int)strtol(hexstr.c_str(), 0, 16);
+}
+
 
 int main()
 {
@@ -144,5 +215,83 @@ int main()
     }else{
         cout<<"error";
     }
+
+    int i = 0;
+    int addressingCounter = 0;
+    for (i = 0; i < lines.size(); i++)
+    {
+        if (!commentChecker(lines.at(i)))
+        {
+            if (getSecondGroup(lines.at(i)).compare("START") == 0)
+            {
+                if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                {
+                    addressingCounter = getHex(getThirdGroup(lines.at(i)));
+                }
+            }
+            else if (getSecondGroup(lines.at(i)).compare("END") != 0)
+            {
+                if (!getFirstGroup(lines.at(i)).compare(" "))
+                {
+                    //search in symbol table and handle cases
+                }
+                string op = getSecondGroup(lines.at(i));
+
+                if (op.compare("WORD"))
+                {
+                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("WORD")))
+                    {
+                        addressingCounter += 3;
+                    }
+
+                }
+                else if (op.compare("RESW"))
+                {
+                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESW")))
+                    {
+                        addressingCounter += 3 * getHex(getThirdGroup(lines.at(i)));
+                    }
+                }
+                else if (op.compare("RESB"))
+                {
+                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESB")))
+                    {
+                        addressingCounter += getHex(getThirdGroup(lines.at(i)));
+                    }
+                }
+                else if (op.compare("BYTE"))
+                {
+                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("BYTE")))
+                    {
+                        addressingCounter += getThirdGroup(lines.at(i)).size() - 3;
+                    }
+                }
+                else
+                {
+                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                    {
+                        addressingCounter += getThirdGroup(lines.at(i)).size();
+                    }
+                }
+            }
+            else if (getSecondGroup(lines.at(i)).compare("END") == 0)
+            {
+            }
+        }
+    }
+    /*smatch match;
+    string sp("LDA ZERO");
+    if (regex_search(sp, match, r) == true)
+    {
+        if (match.str(5).compare(" "))
+        {
+            cout<<match.str(5).size();
+            cout<<"\n";
+            cout<<getHex("13");
+
+        }
+        //   cout<<match.str(1);
+    }*/
+
     return 0;
 }
