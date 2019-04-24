@@ -4,6 +4,79 @@
 
 using namespace std;
 
+string* checkingGeneralRegex (string line)
+{
+    regex secondFormat("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+([ABLSTX]\\s*,\\s*[ABLSTX])\\s*$",std::regex_constants::icase);
+    regex thirdFormat("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex forthFormat("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?((\\+)([a-z]{1,5}))\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex returnSub("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?((\\+)?(rsub))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex endProg("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?(end)\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    regex startProg("^\\s*([^\\s.@#]{1,8}?\\s+){1}(start)\\s+([a-f0-9]{1,18})\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
+    string* data = new string[4];
+    smatch match;
+
+    if(regex_search(line, match, startProg) == true)
+    {
+        data[0] = "0";
+        data[1] = match.str(1);
+        data[2] = match.str(2);
+        data[3] = match.str(3);
+    }
+    else if(regex_search(line, match, endProg) == true)
+    {
+        data[0] = "0";
+        data[1] = match.str(1);
+        data[2] = match.str(2);
+        data[3]= " ";
+    }
+    else if(regex_search(line, match, returnSub) == true)
+    {
+        if (match.str(3) != " ")
+        {
+            data[0] = "4";
+        }
+        else
+        {
+            data[0] = "3";
+        }
+        data[1] = match.str(1);
+        data[2] = match.str(4);
+        data[3] = " ";
+    }
+    else if(regex_search(line, match, secondFormat) == true)
+    {
+        data[0] = "2";
+        data[1] = match.str(1);
+        data[2] = match.str(2);
+        data[3] = match.str(3);
+    }
+    else if(regex_search(line, match, thirdFormat) == true)
+    {
+        data[0] = "3";
+        data[1] = match.str(1);
+        data[2] = match.str(2);
+        data[3] = match.str(6);
+    }
+    else if(regex_search(line, match, forthFormat) == true)
+    {
+        data[0] = "4";
+        data[1] = match.str(1);
+        data[2] = match.str(4);
+        data[3] = match.str(9);
+
+    }
+    else
+    {
+        data[0] = "-1";
+        data[1] = "-1";
+        data[2] = "-1";
+        data[3] = "-1";
+
+        return data;
+    }
+    return data;
+}
+
 bool checkingRegex (string line, string reg)
 {
     regex r{reg};
@@ -87,134 +160,79 @@ int getHex(string hexstr)
 
 int main()
 {
-    /*initializing the map*/
-    map<string,string> opCode;
-    opCode["START"] = "^[a-fA-F0-9]{1,18}$";
-    opCode["ADD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"ADD","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["ADDR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"ADDR","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["CLEAR"] = "^[ABLSTX]$";
-    //opCode.insert({"CLEAR","^[ABLSTX]$"});
-    opCode["COMP"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"COMP","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["COMPR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"COMPR","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["DIV"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"DIV","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["DIVR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"DIVR","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["J"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"J","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["JEQ"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"JEQ","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["JLT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"JLT","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["JGT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"JGT","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["JSUB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"JSUB","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDA"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDA","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDB","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDCH"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDCH","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDL","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDS"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDS","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDT","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["LDX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"LDX","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["MUL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"MUL","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["MULR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"MULR","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["RMO"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"RMO","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["RSUB"] = "^$";
-    //opCode.insert({"RSUB","^$"});
-    opCode["STA"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STA","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STB","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STCH"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STCH","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STL","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STS"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STS","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STT","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["STX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"STX","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["SUB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"SUB","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["SUBR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    //opCode.insert({"SUBR","^[ABLSTX]\\,[ABLSTX]$}"});
-    opCode["RD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"RD","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["TD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"TD","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["WD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"WD","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["TIX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
-    //opCode.insert({"TIX","^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$"});
-    opCode["TIXR"] = "^[ABLSTX]$}";
-    //opCode.insert({"TIXR","^[ABLSTX]$}"});
-    opCode["BYTE"] = "^(((?i)[X]\\'[a-fA-F0-9]{0,15}\\')|((?i)[C]\\'[a-zA-Z0-9]{0,15}\\'))$";
-    //opCode.insert({"BYTE","^(((?i)[X]\\'[a-fA-F0-9]{0,15}\\')|((?i)[C]\\'[a-zA-Z0-9]{0,15}\\'))$"});
-    opCode["RESB"] = "^[0-9]{1,18}$";
-    //opCode.insert({"RESB","^[0-9]{1,18}$"});
-    opCode["WORD"] = "^[0-9]{1,18}$";
-    //opCode.insert({"WORD","^[0-9]{1,18}$"});
-    opCode["RESW"] = "^[0-9]{1,18}$";
-    //opCode.insert({"RESW","^[0-9]{1,18}$"});
-    opCode["END"] = "^$";
+    // Map for second format
+    map<string,string> opCodeSecondFormat;
+    opCodeSecondFormat["ADDR"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["CLEAR"] = "^[ABLSTX]$";
+    opCodeSecondFormat["COMPR"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["DIVR"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["MULR"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["RMO"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["SUBR"] = "^[ABLSTX]\\,[ABLSTX]$}";
+    opCodeSecondFormat["TIXR"] = "^[ABLSTX]$}";
+
+    // Map for third & forth format
+    map<string,string> opCodeThirdForth;
+    opCodeThirdForth["START"] = "^[a-fA-F0-9]{1,18}$";
+    opCodeThirdForth["ADD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["COMP"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["DIV"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["J"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["JEQ"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["JLT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["JGT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["JSUB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDA"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDCH"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDS"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["LDX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["MUL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["RSUB"] = "^$";
+    opCodeThirdForth["STA"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STCH"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STL"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STS"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STT"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["STX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["SUB"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["RD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["TD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["WD"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["TIX"] = "^((\\@[a-zA-Z0-9]{1,17})|(\\#[a-zA-Z0-9]{1,17})|([a-zA-Z0-9]{1,18}))$";
+    opCodeThirdForth["BYTE"] = "^(((?i)[X]\\'[a-fA-F0-9]{0,15}\\')|((?i)[C]\\'[a-zA-Z0-9]{0,15}\\'))$";
+    opCodeThirdForth["RESB"] = "^[0-9]{1,18}$";
+    opCodeThirdForth["WORD"] = "^[0-9]{1,18}$";
+    opCodeThirdForth["RESW"] = "^[0-9]{1,18}$";
+    opCodeThirdForth["END"] = "^$";
 
     /*READING FROM FILE
     ===================*/
     ifstream inputFile("input.txt");
     vector<string> lines;
-    if(inputFile.is_open()){
+    if(inputFile.is_open())
+    {
         string line;
-        while(getline(inputFile,line)){
+        while(getline(inputFile,line))
+        {
             lines.push_back(line);
         }
         inputFile.close();
     }
-   /* cout<<lines.at(0) + "\n";
-    //cout<<lines.at(1);
-    if (opCode.find("aaa") != opCode.end()){
-        cout<<opCode.at("ffd");
-    } else {
-    cout<<"ERROR";
-    }*/
+    /* cout<<lines.at(0) + "\n";
+     //cout<<lines.at(1);
+     if (opCode.find("aaa") != opCode.end()){
+         cout<<opCode.at("ffd");
+     } else {
+     cout<<"ERROR";
+     }*/
 
     //regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)|((?i)rsub)$"};
-    regex secondFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+([ABLSTX]\\s*,\\s*[ABLSTX])\\s*$",std::regex_constants::icase);
-    regex thirdFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?([a-z]{1,6})\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
-    regex forthFormate("^\\s*([^\\s.@#]{1,8}\\s+){0,1}?((\\+)([a-z]{1,5}))\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
-    regex returnSub("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?((\\+)?(rsub))\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
-    regex endProg("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?(end)\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
-    regex startProg("^\\s*([^\\s.@#]{1,8}?\\s+){1}(start)\\s+([a-f0-9]{1,18})\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
-    if(regex_match(lines.at(0),startProg)){
-            cout<<"start!";
-    }else if(regex_match(lines.at(0),endProg)){
-        cout<<"end!";
-    }else if(regex_match(lines.at(0),returnSub)){
-        cout<<"return!";
-    }else if(regex_match(lines.at(0),secondFormate)){
-        cout<<"2nd formate!";
-    }else if(regex_match(lines.at(0),thirdFormate)){
-        cout<<"3rd formate!";
-    }else if(regex_match(lines.at(0),forthFormate)){
-        cout<<"4th formate!";
-    }else{
-        cout<<"error";
-    }
+
+
 
     int i = 0;
     int addressingCounter = 0;
