@@ -1,1 +1,1 @@
-copy START 02
+arr word 9
