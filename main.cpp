@@ -13,23 +13,24 @@ string* checkingGeneralRegex (string line)
     regex endProg("^\\s*([^\\s.@#]{1,8}?\\s+){0,1}?(end)\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*([^\\s.@#]{1,8}?\\s+){1}(start)\\s+([a-f0-9]{1,18})\\s*(\\..{0,31})*?\\s*$",std::regex_constants::icase);
     string* data = new string[4];
+    string sp (line);
     smatch match;
 
-    if(regex_search(line, match, startProg) == true)
+    if(regex_search(sp, match, startProg) == true)
     {
         data[0] = "0";
         data[1] = match.str(1);
         data[2] = match.str(2);
         data[3] = match.str(3);
     }
-    else if(regex_search(line, match, endProg) == true)
+    else if(regex_search(sp, match, endProg) == true)
     {
         data[0] = "0";
         data[1] = match.str(1);
         data[2] = match.str(2);
         data[3]= " ";
     }
-    else if(regex_search(line, match, returnSub) == true)
+    else if(regex_search(sp, match, returnSub) == true)
     {
         if (match.str(3) != " ")
         {
@@ -43,21 +44,21 @@ string* checkingGeneralRegex (string line)
         data[2] = match.str(4);
         data[3] = " ";
     }
-    else if(regex_search(line, match, secondFormat) == true)
+    else if(regex_search(sp, match, secondFormat) == true)
     {
         data[0] = "2";
         data[1] = match.str(1);
         data[2] = match.str(2);
         data[3] = match.str(3);
     }
-    else if(regex_search(line, match, thirdFormat) == true)
+    else if(regex_search(sp, match, thirdFormat) == true)
     {
         data[0] = "3";
         data[1] = match.str(1);
         data[2] = match.str(2);
-        data[3] = match.str(6);
+        data[3] = match.str(7);
     }
-    else if(regex_search(line, match, forthFormat) == true)
+    else if(regex_search(sp, match, forthFormat) == true)
     {
         data[0] = "4";
         data[1] = match.str(1);
@@ -77,72 +78,6 @@ string* checkingGeneralRegex (string line)
     return data;
 }
 
-bool checkingRegex (string line, string reg)
-{
-    regex r{reg};
-
-    if(regex_match(line,r))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-string getFirstGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(1);
-    }
-    else
-    {
-        return nullptr;
-    }
-
-}
-
-string getSecondGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(5);
-    }
-    else
-    {
-        return nullptr;
-    }
-
-}
-
-
-string getThirdGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(9);
-    }
-    else
-    {
-        return nullptr;
-    }
-
-}
-
 bool commentChecker(string mainStr)
 {
     // std::string::find returns 0 if toMatch is found at starting
@@ -155,6 +90,20 @@ bool commentChecker(string mainStr)
 int getHex(string hexstr)
 {
     return (int)strtol(hexstr.c_str(), 0, 16);
+}
+
+bool checkingOpRegex(string line, string reg)
+{
+    regex r{reg};
+
+    if(regex_match(line,r))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 
@@ -236,64 +185,76 @@ int main()
 
     int i = 0;
     int addressingCounter = 0;
+    string * returnedArray;
     for (i = 0; i < lines.size(); i++)
     {
         if (!commentChecker(lines.at(i)))
         {
-            if (getSecondGroup(lines.at(i)).compare("START") == 0)
+            returnedArray = checkingGeneralRegex(lines.at(i));
+            if (returnedArray[2].compare("start") == 0)
             {
-                if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
                 {
-                    addressingCounter = getHex(getThirdGroup(lines.at(i)));
+                    addressingCounter = getHex(returnedArray[3]);
                 }
             }
-            else if (getSecondGroup(lines.at(i)).compare("END") != 0)
+            else if (returnedArray[2].compare("END") != 0)
             {
-                if (!getFirstGroup(lines.at(i)).compare(" "))
+                if (!returnedArray[1].compare(" "))
                 {
                     //search in symbol table and handle cases
                 }
-                string op = getSecondGroup(lines.at(i));
+                string op = returnedArray[2];
 
                 if (op.compare("WORD"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("WORD")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
                     {
                         addressingCounter += 3;
                     }
-
                 }
                 else if (op.compare("RESW"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESW")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
-                        addressingCounter += 3 * getHex(getThirdGroup(lines.at(i)));
+                        addressingCounter += 3 * getHex(returnedArray[3]);
                     }
                 }
                 else if (op.compare("RESB"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESB")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
                     {
-                        addressingCounter += getHex(getThirdGroup(lines.at(i)));
+                        addressingCounter += getHex(returnedArray[3]);
                     }
                 }
                 else if (op.compare("BYTE"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("BYTE")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
                     {
-                        addressingCounter += getThirdGroup(lines.at(i)).size() - 3;
+                        addressingCounter += returnedArray[3].size() - 3;
                     }
                 }
                 else
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                    if (returnedArray[0].compare("2") == 0)
                     {
-                        addressingCounter += getThirdGroup(lines.at(i)).size();
+                        if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
+                        {
+                            addressingCounter += getHex(returnedArray[0]);
+                        }
+                    }
+                    else if (returnedArray[0].compare("3") == 0 || returnedArray[0].compare("4") == 0)
+                    {
+                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(returnedArray[2])))
+                        {
+                            addressingCounter += getHex(returnedArray[0]);
+                        }
                     }
                 }
             }
-            else if (getSecondGroup(lines.at(i)).compare("END") == 0)
+            else if (returnedArray[2].compare("END") == 0)
             {
+
             }
         }
     }
@@ -310,6 +271,12 @@ int main()
         }
         //   cout<<match.str(1);
     }*/
+    /* string * finalArrayP;
+     finalArrayP = checkingGeneralRegex("sta buffer");
+
+     for (int i = 0; i < 4; i++){
+         cout<<finalArrayP[i];
+     }*/
 
     return 0;
 }
