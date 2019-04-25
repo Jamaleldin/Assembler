@@ -6,32 +6,33 @@ using namespace std;
 
 string* checkingGeneralRegex (string line)
 {
-    std::regex secondFormate("^\\s*(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*,\\s*[ABLSTX])\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex thirdFormate("^\\s*(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex forthFormate("^\\s*(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex returnSub("^\\s*(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex endProg("^\\s*(end)(\\s+(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18})))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    regex startProg("^\\s*(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex secondFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*(,\\s*[ABLSTX])?)\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex thirdFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex forthFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     string* data = new string[4];
+    string sp (line);
     smatch match;
 
-    if(regex_search(line, match, startProg) == true)
+    if(regex_search(sp, match, startProg) == true)
     {
         data[0] = "0";
-        data[1] = match.str(1);
-        data[2] = match.str(2);
-        data[3] = match.str(3);
+        data[1] = match.str(2);
+        data[2] = match.str(3);
+        data[3] = match.str(4);
     }
-    else if(regex_search(line, match, endProg) == true)
+    else if(regex_search(sp, match, endProg) == true)
     {
         data[0] = "0";
-        data[1] = match.str(1);
-        data[2] = match.str(2);
-        data[3]= " ";
+        data[1] = " ";
+        data[2] = match.str(1);
+        data[3]= match.str(3);
     }
-    else if(regex_search(line, match, returnSub) == true)
+    else if(regex_search(sp, match, returnSub) == true)
     {
-        if (match.str(3) != " ")
+        if (match.str(4) != " ")
         {
             data[0] = "4";
         }
@@ -39,30 +40,45 @@ string* checkingGeneralRegex (string line)
         {
             data[0] = "3";
         }
-        data[1] = match.str(1);
-        data[2] = match.str(4);
+        data[1] = match.str(2);
+        data[2] = match.str(5);
         data[3] = " ";
     }
-    else if(regex_search(line, match, secondFormat) == true)
+    else if(regex_search(sp, match, secondFormat) == true)
     {
         data[0] = "2";
-        data[1] = match.str(1);
-        data[2] = match.str(2);
-        data[3] = match.str(3);
+        data[1] = match.str(2);
+        data[2] = match.str(3);
+        data[3] = match.str(4);
     }
-    else if(regex_search(line, match, thirdFormat) == true)
+    else if(regex_search(sp, match, thirdFormat) == true)
     {
         data[0] = "3";
-        data[1] = match.str(1);
-        data[2] = match.str(2);
-        data[3] = match.str(6);
+        data[1] = match.str(2);
+        data[2] = match.str(3);
+        if (match.str(6) != " ")
+        {
+            data[3] = match.str(7);
+        }
+        else
+        {
+            data[3] = match.str(8);
+        }
+
     }
-    else if(regex_search(line, match, forthFormat) == true)
+    else if(regex_search(sp, match, forthFormat) == true)
     {
         data[0] = "4";
-        data[1] = match.str(1);
-        data[2] = match.str(4);
-        data[3] = match.str(9);
+        data[1] = match.str(2);
+        data[2] = match.str(5);
+        if (match.str(8) != " ")
+        {
+            data[3] = match.str(9);
+        }
+        else
+        {
+            data[3] = match.str(10);
+        }
 
     }
     else
@@ -75,72 +91,6 @@ string* checkingGeneralRegex (string line)
         return data;
     }
     return data;
-}
-
-bool checkingRegex (string line, string reg)
-{
-    regex r{reg};
-
-    if(regex_match(line,r))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-string getFirstGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(1);
-    }
-    else
-    {
-        return nullptr;
-    }
-
-}
-
-string getSecondGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(5);
-    }
-    else
-    {
-        return nullptr;
-    }
-
-}
-
-
-string getThirdGroup(string line)
-{
-    regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)$"};
-
-    smatch match;
-
-    if (regex_search(line, match, r) == true)
-    {
-        return match.str(9);
-    }
-    else
-    {
-        return nullptr;
-    }
-
 }
 
 bool commentChecker(string mainStr)
@@ -157,32 +107,47 @@ int getHex(string hexstr)
     return (int)strtol(hexstr.c_str(), 0, 16);
 }
 
+bool checkingOpRegex(string line, string reg)
+{
+    regex r{reg};
+
+    if(regex_match(line,r))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 
 int main()
 {
-    string operandCommonRegex = "^(((@|#)([^\\s,.@#*]{1,17}))|([^\\s,.@#*]{1,18})|(([^\\s.@#*]{1,16})\\,(x)))$";
-    // Map for second format
+    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|(([a-zA-Z]{1}[a-zA-Z0-9]{1,17}))|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
+    /*Map for second format
+    ========================*/
     map<string,string> opCodeSecondFormat;
-    opCodeSecondFormat["ADDR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["CLEAR"] = "^[ABLSTX]$";
-    opCodeSecondFormat["COMPR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["DIVR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["MULR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["RMO"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["SUBR"] = "^[ABLSTX]\\,[ABLSTX]$}";
-    opCodeSecondFormat["TIXR"] = "^[ABLSTX]$}";
+    opCodeSecondFormat["ADDR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["CLEAR"] = "^[ABLSTX]\\s*$";
+    opCodeSecondFormat["COMPR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["DIVR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["MULR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["RMO"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["SUBR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
+    opCodeSecondFormat["TIXR"] = "^[ABLSTX]\\s*$";
 
-    // Map for third & forth format
+    /*Map for third & forth format
+    ==============================*/
     map<string,string> opCodeThirdForth;
-    opCodeThirdForth["START"] = "^[a-fA-F0-9]{1,18}$";
     opCodeThirdForth["ADD"] = operandCommonRegex;
     opCodeThirdForth["COMP"] = operandCommonRegex;
     opCodeThirdForth["DIV"] = operandCommonRegex;
-    opCodeThirdForth["J"] = "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
-    opCodeThirdForth["JEQ"] = "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
-    opCodeThirdForth["JLT"] = "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
-    opCodeThirdForth["JGT"] = "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
-    opCodeThirdForth["JSUB"] = "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
+    opCodeThirdForth["J"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeThirdForth["JEQ"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeThirdForth["JLT"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeThirdForth["JGT"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeThirdForth["JSUB"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
     opCodeThirdForth["LDA"] = operandCommonRegex;
     opCodeThirdForth["LDB"] = operandCommonRegex;
     opCodeThirdForth["LDCH"] = operandCommonRegex;
@@ -200,16 +165,23 @@ int main()
     opCodeThirdForth["STT"] = operandCommonRegex;
     opCodeThirdForth["STX"] = operandCommonRegex;
     opCodeThirdForth["SUB"] = operandCommonRegex;
-    opCodeThirdForth["RD"] = "^(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18})|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
-    opCodeThirdForth["TD"] = "^(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18})|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
-    opCodeThirdForth["WD"] = "^(((@|#)([^\\s.@#]{1,17}))|([^\\s.@#]{1,18})|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
+    opCodeThirdForth["RD"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,17}))|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,16})))|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
+    opCodeThirdForth["TD"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,17}))|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,16})))|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
+    opCodeThirdForth["WD"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,17}))|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,16})))|([X]\\'[a-fA-F0-9]{0,14}\\'))$";
     opCodeThirdForth["TIX"] = operandCommonRegex;
     opCodeThirdForth["BYTE"] = "^(([X]\\'[a-fA-F0-9]{0,14}\\')|([C]\\'[a-zA-Z0-9]{0,15}\\'))$";
-    opCodeThirdForth["RESB"] = "^[0-9]{1,18}$";
-    opCodeThirdForth["WORD"] = "^(([0-9]{1,18})|((#|@)([0-9]{1,17}))|(([0-9])(\\,)?))$";
-    opCodeThirdForth["RESW"] = "^[0-9]{1,18}$";
-    opCodeThirdForth["END"] =  "^\\s*((([a-zA-Z]{1})([a-zA-Z0-9]{1,7})\\s+)|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))\\s*$";
-    opCodeThirdForth["ORG"] = "^((\\w+)|(\\*))$";
+    /*Map for directives
+    ====================*/
+    map<string,string> opCodeDirectives;
+    opCodeDirectives["START"] = "^[a-fA-F0-9]{1,18}$";
+    opCodeDirectives["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeDirectives["RESB"] = "^[0-9]{1,18}$";
+    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
+    opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
+    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
+    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
+    opCodeDirectives["BASE"] = "^(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)$";
+    opCodeDirectives["NOBASE"] = "^$";
 
     /*READING FROM FILE
     ===================*/
@@ -226,64 +198,76 @@ int main()
     }
     int i = 0;
     int addressingCounter = 0;
+    string * returnedArray;
     for (i = 0; i < lines.size(); i++)
     {
         if (!commentChecker(lines.at(i)))
         {
-            if (getSecondGroup(lines.at(i)).compare("START") == 0)
+            returnedArray = checkingGeneralRegex(lines.at(i));
+            if (returnedArray[2].compare("start") == 0)
             {
-                if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
                 {
-                    addressingCounter = getHex(getThirdGroup(lines.at(i)));
+                    addressingCounter = getHex(returnedArray[3]);
                 }
             }
-            else if (getSecondGroup(lines.at(i)).compare("END") != 0)
+            else if (returnedArray[2].compare("END") != 0)
             {
-                if (!getFirstGroup(lines.at(i)).compare(" "))
+                if (!returnedArray[1].compare(" "))
                 {
                     //search in symbol table and handle cases
                 }
-                string op = getSecondGroup(lines.at(i));
+                string op = returnedArray[2];
 
                 if (op.compare("WORD"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("WORD")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
                     {
                         addressingCounter += 3;
                     }
-
                 }
                 else if (op.compare("RESW"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESW")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
-                        addressingCounter += 3 * getHex(getThirdGroup(lines.at(i)));
+                        addressingCounter += 3 * getHex(returnedArray[3]);
                     }
                 }
                 else if (op.compare("RESB"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("RESB")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
                     {
-                        addressingCounter += getHex(getThirdGroup(lines.at(i)));
+                        addressingCounter += getHex(returnedArray[3]);
                     }
                 }
                 else if (op.compare("BYTE"))
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at("BYTE")))
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
                     {
-                        addressingCounter += getThirdGroup(lines.at(i)).size() - 3;
+                        addressingCounter += returnedArray[3].size() - 3;
                     }
                 }
                 else
                 {
-                    if (checkingRegex(getThirdGroup(lines.at(i)), opCode.at(getSecondGroup(lines.at(i)))))
+                    if (returnedArray[0].compare("2") == 0)
                     {
-                        addressingCounter += getThirdGroup(lines.at(i)).size();
+                        if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
+                        {
+                            addressingCounter += getHex(returnedArray[0]);
+                        }
+                    }
+                    else if (returnedArray[0].compare("3") == 0 || returnedArray[0].compare("4") == 0)
+                    {
+                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(returnedArray[2])))
+                        {
+                            addressingCounter += getHex(returnedArray[0]);
+                        }
                     }
                 }
             }
-            else if (getSecondGroup(lines.at(i)).compare("END") == 0)
+            else if (returnedArray[2].compare("END") == 0)
             {
+
             }
         }
     return 0;
