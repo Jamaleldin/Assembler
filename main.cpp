@@ -1,6 +1,8 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <regex>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
@@ -106,6 +108,14 @@ bool checkingOpRegex(string line, string reg)
     }
 }
 
+void toUpper(basic_string<char>& s)
+{
+    for (basic_string<char>::iterator p = s.begin();
+            p != s.end(); ++p)
+    {
+        *p = toupper(*p); // toupper is for char
+    }
+}
 
 int main()
 {
@@ -181,8 +191,12 @@ int main()
 
     //regex r{"^([a-zA-z0-9]{1,8})*?(\\s*?)(((\\+(?i)[A-Z]{1,5})|((?i)[A-Z]{1,6}))(\\s+)([@|#]?((?i)[a-zA-z0-9]+)|((?i)[a-zA-z0-9]+\\,{1}(?i)[X])|((?i)[ABLSTX]\\,{1}(?i)[ABLSTX])))|((?i)end)|((?i)rsub)$"};
 
-
-
+    int length = lines.size();
+    vector<int> numOfError;
+    vector<string> typeOfError;
+    map<string,int> symbolTable;
+    vector<string> namesOftable;
+    int *addresses = new int[length];
     int i = 0;
     int addressingCounter = 0;
     string * returnedArray;
@@ -193,45 +207,111 @@ int main()
             returnedArray = checkingGeneralRegex(lines.at(i));
             if (returnedArray[2].compare("start") == 0)
             {
-                if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
+                if (i == 0)
                 {
-                    addressingCounter = getHex(returnedArray[3]);
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
+                    {
+                        addressingCounter = getHex(returnedArray[3]);
+                        addresses[i] = addressingCounter;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                    }
                 }
-            }
-            else if (returnedArray[2].compare("END") != 0)
-            {
-                if (!returnedArray[1].compare(" "))
+                else
                 {
-                    //search in symbol table and handle cases
+                    numOfError.push_back(i);
+                    typeOfError.push_back("duplicate or misplaced START statement");
+                    addresses[i] = addressingCounter;
+                }
+
+            }
+            else if (returnedArray[2].compare("end") != 0)
+            {
+                if (returnedArray[1].compare(" ") != 0)
+                {
+                    if (namesOftable.size() == 0)
+                    {
+                        namesOftable.push_back(returnedArray[1]);
+                        symbolTable[returnedArray[1]] = addressingCounter;
+                    }
+                    else
+                    {
+                        if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("duplicate label definition");
+                        }
+                        else
+                        {
+                            namesOftable.push_back(returnedArray[1]);
+                            symbolTable[returnedArray[1]] = addressingCounter;
+                        }
+                    }
                 }
                 string op = returnedArray[2];
 
-                if (op.compare("WORD"))
+                if (op.compare("word") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
                     {
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
                         addressingCounter += 3;
                     }
                 }
-                else if (op.compare("RESW"))
+                else if (op.compare("resw") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += 3 * getHex(returnedArray[3]);
                     }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
                 }
-                else if (op.compare("RESB"))
+                else if (op.compare("resb") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += getHex(returnedArray[3]);
                     }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
                 }
-                else if (op.compare("BYTE"))
+                else if (op.compare("byte") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += returnedArray[3].size() - 3;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
                     }
                 }
                 else
@@ -240,43 +320,133 @@ int main()
                     {
                         if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
                         {
+                            addresses[i] = addressingCounter;
                             addressingCounter += getHex(returnedArray[0]);
+                        }
+                        else
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("illegal operand");
+                            addresses[i] = addressingCounter;
+                            addressingCounter += 3;
                         }
                     }
                     else if (returnedArray[0].compare("3") == 0 || returnedArray[0].compare("4") == 0)
                     {
-                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(returnedArray[2])))
+                        string opp = returnedArray[2];
+                        toUpper(opp);
+                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp)))
                         {
+                            addresses[i] = addressingCounter;
                             addressingCounter += getHex(returnedArray[0]);
+                        }
+                        else
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("illegal operand");
+                            addresses[i] = addressingCounter;
+                            addressingCounter += 3;
                         }
                     }
                 }
             }
             else if (returnedArray[2].compare("END") == 0)
             {
-
+                if (returnedArray[3].compare(" ") == 0)
+                {
+                    if (returnedArray[1].compare(" ") != 0)
+                    {
+                        if (namesOftable.size() == 0)
+                        {
+                            namesOftable.push_back(returnedArray[1]);
+                            symbolTable[returnedArray[1]] = addressingCounter;
+                        }
+                        else
+                        {
+                            if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("duplicate label definition");
+                            }
+                            else
+                            {
+                                namesOftable.push_back(returnedArray[1]);
+                                symbolTable[returnedArray[1]] = addressingCounter;
+                            }
+                        }
+                    }
+                    addresses[i] = addressingCounter;
+                }
+                else
+                {
+                    if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[3]) != namesOftable.end() )
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("undefined symbol in operand");
+                    }
+                    if (returnedArray[3].compare(" ") == 0)
+                    {
+                        if (returnedArray[1].compare(" ") != 0)
+                        {
+                            if (namesOftable.size() == 0)
+                            {
+                                namesOftable.push_back(returnedArray[1]);
+                                symbolTable[returnedArray[1]] = addressingCounter;
+                            }
+                            else
+                            {
+                                if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                                {
+                                    numOfError.push_back(i);
+                                    typeOfError.push_back("duplicate label definition");
+                                }
+                                else
+                                {
+                                    namesOftable.push_back(returnedArray[1]);
+                                    symbolTable[returnedArray[1]] = addressingCounter;
+                                }
+                            }
+                        }
+                        addresses[i] = addressingCounter;
+                    }
+                }
+            }
+                else if (returnedArray[2].compare("-1") == 0)
+                {
+                    numOfError.push_back(i);
+                    typeOfError.push_back("unrecognized operation code");
+                    addresses[i] = addressingCounter;
+                }
             }
         }
-    }
-    /*smatch match;
-    string sp("LDA ZERO");
-    if (regex_search(sp, match, r) == true)
-    {
-        if (match.str(5).compare(" "))
+
+        for (i = 0; i < lines.size(); i ++)
         {
-            cout<<match.str(5).size();
+            cout<<addresses[i];
             cout<<"\n";
-            cout<<getHex("13");
-
         }
-        //   cout<<match.str(1);
-    }*/
-    /* string * finalArrayP;
-     finalArrayP = checkingGeneralRegex("sta buffer");
 
-     for (int i = 0; i < 4; i++){
-         cout<<finalArrayP[i];
-     }*/
+        delete [] addresses;
 
-    return 0;
-}
+        /*smatch match;
+        string sp("LDA ZERO");
+        if (regex_search(sp, match, r) == true)
+        {
+            if (match.str(5).compare(" "))
+            {
+                cout<<match.str(5).size();
+                cout<<"\n";
+                cout<<getHex("13");
+
+            }
+            //   cout<<match.str(1);
+        }*/
+        /* string * finalArrayP;
+         finalArrayP = checkingGeneralRegex("sta buffer");
+
+         for (int i = 0; i < 4; i++){
+             cout<<finalArrayP[i];
+         }*/
+
+        return 0;
+    }

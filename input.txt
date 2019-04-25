@@ -1,1 +1,3 @@
-copy START 02
+copy start 02
+   lda  zero
+   sta  ggg
