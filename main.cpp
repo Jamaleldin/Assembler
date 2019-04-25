@@ -3,14 +3,16 @@
 #include <regex>
 #include <algorithm>
 #include <vector>
+#include <string>
+#include <cstdlib>
 
 using namespace std;
 
 string* checkingGeneralRegex (string line)
 {
     std::regex secondFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*(,\\s*[ABLSTX])?)\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
@@ -103,12 +105,17 @@ bool commentChecker(string mainStr)
     else
         return false;
 }
-
+/*convert hex string to int*/
 int getHex(string hexstr)
 {
     return (int)strtol(hexstr.c_str(), 0, 16);
 }
-
+/*convert string to int*/
+int getInt(string s)
+{
+    int i = std::atoi (s.c_str());
+    return i;
+}
 bool checkingOpRegex(string line, string reg)
 {
     regex r{reg};
@@ -183,11 +190,12 @@ int main()
     /*Map for directives
     ====================*/
     map<string,string> opCodeDirectives;
-    opCodeDirectives["START"] = "^[a-fA-F0-9]{1,18}$";
-    opCodeDirectives["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
-    opCodeDirectives["RESB"] = "^[0-9]{1,18}$";
-    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
-    opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
+    /*change to opCodeDirectives*/
+    /**/opCodeThirdForth["START"] = "^[a-fA-F0-9]{1,18}$";
+    /**/opCodeThirdForth["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    /**/opCodeThirdForth["RESB"] = "^[0-9]{1,4}$";
+    /**/opCodeThirdForth["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
+    /**/opCodeThirdForth["RESW"] = "^[0-9]{1,4}$";
     opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
     opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
     opCodeDirectives["BASE"] = "^(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)$";
@@ -205,9 +213,6 @@ int main()
             lines.push_back(line);
         }
         inputFile.close();
-    }
-    for(int i=0;i<lines.size();i++){
-        cout<<lines.at(i)<<endl;
     }
     int length = lines.size();
     vector<int> numOfError;
@@ -247,7 +252,7 @@ int main()
                 }
 
             }
-            else if (returnedArray[2].compare("end") != 0)
+            else if (returnedArray[2].compare("end") != 0)//first end
             {
                 if (returnedArray[1].compare(" ") != 0)
                 {
@@ -292,7 +297,7 @@ int main()
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3 * getHex(returnedArray[3]);
+                        addressingCounter += 3 * getHex(returnedArray[3]);//not hex user will write decimal
                     }
                     else
                     {
@@ -322,7 +327,10 @@ int main()
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += returnedArray[3].size() - 3;
+                        if((returnedArray[3].size() - 3) % 2 == 0)
+                            addressingCounter += (returnedArray[3].size() - 3)/2;//every 2 hex is byte it must be even size
+                        else
+                            //error
                     }
                     else
                     {
@@ -368,7 +376,7 @@ int main()
                     }
                 }
             }
-            else if (returnedArray[2].compare("END") == 0)
+            else if (returnedArray[2].compare("END") == 0)//second end?!
             {
                 if (returnedArray[3].compare(" ") == 0)
                 {
@@ -378,6 +386,7 @@ int main()
                         {
                             namesOftable.push_back(returnedArray[1]);
                             symbolTable[returnedArray[1]] = addressingCounter;
+
                         }
                         else
                         {

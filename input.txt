@@ -1,7 +1,15 @@
-<<<<<<< HEAD
-arr word 9
-=======
-copy start 02
-   lda  zero
-   sta  ggg
->>>>>>> f5d9ab0159012de6e43a4d4531a82c7efb924167
+Q1       start   0
+         LDX     #0
+         LDA     #0
+LOOP     LDA     DATA,X
+         MUL     #2
+         ADD     #1
+         STA     DATA,X
+         RMO     X,A
+         ADD     #3
+         COMP    #300
+         RMO     A,X
+         JLT     LOOP
+         J       *
+DATA     RESW    100
+         END
