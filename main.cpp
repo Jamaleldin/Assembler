@@ -14,7 +14,7 @@ string* checkingGeneralRegex (string line)
     std::regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex endProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     string* data = new string[4];
     string sp (line);
@@ -30,13 +30,13 @@ string* checkingGeneralRegex (string line)
     else if(regex_search(sp, match, endProg) == true)
     {
         data[0] = "0";
-        data[1] = " ";
-        data[2] = match.str(1);
-        data[3]= match.str(3);
+        data[1] = match.str(2);
+        data[2] = match.str(3);
+        data[3]= match.str(5);
     }
     else if(regex_search(sp, match, returnSub) == true)
     {
-        if (match.str(4) != " ")
+        if (match.str(4) != "")
         {
             data[0] = "4";
         }
@@ -60,29 +60,14 @@ string* checkingGeneralRegex (string line)
         data[0] = "3";
         data[1] = match.str(2);
         data[2] = match.str(3);
-        if (match.str(6).compare("") != 0)
-        {
-            data[3] = match.str(7);
-        }
-        else
-        {
-            data[3] = match.str(8);
-        }
-
+        data[3] = match.str(4);
     }
     else if(regex_search(sp, match, forthFormat) == true)
     {
         data[0] = "4";
         data[1] = match.str(2);
         data[2] = match.str(5);
-        if (match.str(8).compare("") != 0)
-        {
-            data[3] = match.str(9);
-        }
-        else
-        {
-            data[3] = match.str(10);
-        }
+        data[3] = match.str(6);
 
     }
     else
@@ -116,9 +101,19 @@ int getInt(string s)
     int i = std::atoi (s.c_str());
     return i;
 }
+bool strIsDigit(string s)
+{
+    int numOfdigits=0;
+    for(int i=0; i<s.length(); i++)
+    {
+        if(isdigit(s.at(i)))
+            numOfdigits++;
+    }
+    return numOfdigits==s.length();
+}
 bool checkingOpRegex(string line, string reg)
 {
-    regex r{reg};
+    regex r(reg,std::regex_constants::icase);
 
     if(regex_match(line,r))
     {
@@ -148,8 +143,10 @@ void toLower(basic_string<char>& s)
     }
 }
 
-bool IsHex(string& in) {
-    for (char d : in) {
+bool IsHex(string& in)
+{
+    for (char d : in)
+    {
         if (!isxdigit(d)) return false;
     }
     return true;
@@ -157,7 +154,7 @@ bool IsHex(string& in) {
 
 int main()
 {
-    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|(([a-zA-Z]{1}[a-zA-Z0-9]{1,17}))|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
+    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
     /*Map for second format
     ========================*/
     map<string,string> opCodeSecondFormat;
@@ -207,16 +204,15 @@ int main()
     ====================*/
     map<string,string> opCodeDirectives;
     /*change to opCodeDirectives*/
-    /**/opCodeThirdForth["START"] = "^[a-fA-F0-9]{1,18}$";
-    /**/opCodeThirdForth["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
-    /**/opCodeThirdForth["RESB"] = "^[0-9]{1,4}$";
-    /**/opCodeThirdForth["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
-    /**/opCodeThirdForth["RESW"] = "^[0-9]{1,4}$";
+    opCodeDirectives["START"] = "^[a-fA-F0-9]{0,4}$";
+    opCodeDirectives["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
+    opCodeDirectives["RESB"] = "^[0-9]{1,4}$";
+    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
+    opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
     opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
     opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9])(\\+|-)([a-zA-Z0-9])))$";
     opCodeDirectives["BASE"] = "^(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)$";
     opCodeDirectives["NOBASE"] = "^$";
-
     /*READING FROM FILE
     ===================*/
     ifstream inputFile("input.txt");
@@ -250,7 +246,7 @@ int main()
             {
                 if (i == 0)
                 {
-                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
+                    if (checkingOpRegex(returnedArray[3], opCodeDirectives.at("START")))
                     {
                         addressingCounter = getHex(returnedArray[3]);
                         addresses[i] = addressingCounter;
@@ -270,7 +266,7 @@ int main()
                 }
 
             }
-            else if (checker.compare("end") != 0)//first end
+            else if (checker.compare("end") != 0)
             {
                 if (returnedArray[1].compare("") != 0)
                 {
@@ -303,10 +299,16 @@ int main()
                 toLower(op);
                 if (op.compare("word") == 0)
                 {
-                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
+                    if (checkingOpRegex(returnedArray[3], opCodeDirectives.at("WORD")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3;
+                        int increament;
+                        std::size_t found = returnedArray[3].find(",");
+                        if(found!=std::string::npos)
+                            increament = returnedArray[3].length() - static_cast<int>(returnedArray[3].length()/2);
+                        else
+                            increament = 3;
+                        addressingCounter =addressingCounter + increament;
                     }
                     else
                     {
@@ -318,10 +320,13 @@ int main()
                 }
                 else if (op.compare("resw") == 0)
                 {
-                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
+                    if (checkingOpRegex(returnedArray[3], opCodeDirectives.at("RESW")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3 * getInt(returnedArray[3]); //not hex user will write decimal
+                        if(strIsDigit(returnedArray[3]))
+                            addressingCounter += 3 * getInt(returnedArray[3]);
+                        else
+                            addressingCounter = addressingCounter + 3;
                     }
                     else
                     {
@@ -332,7 +337,7 @@ int main()
                 }
                 else if (op.compare("resb") == 0)
                 {
-                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
+                    if (checkingOpRegex(returnedArray[3], opCodeDirectives.at("RESB")))
                     {
                         addresses[i] = addressingCounter;
                         addressingCounter += getInt(returnedArray[3]);
@@ -346,18 +351,26 @@ int main()
                 }
                 else if (op.compare("byte") == 0)
                 {
-                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
+                    if (checkingOpRegex(returnedArray[3], opCodeDirectives.at("BYTE")))
                     {
                         addresses[i] = addressingCounter;
-                        if((returnedArray[3].size() - 3) % 2 == 0)
+                        if(returnedArray[3].at(0) == 'x')
                         {
-                            addressingCounter += (returnedArray[3].size() - 3)/2;//every 2 hex is byte it must be even size
+                            if((returnedArray[3].length() - 3) % 2 == 0)
+                            {
+                                addressingCounter += (returnedArray[3].length() - 3)/2;
+                            }
+                            else
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("odd length for hex string");
+                                addresses[i] = addressingCounter;
+                            }
                         }
                         else
                         {
-
+                            addressingCounter += (returnedArray[3].length() - 3);
                         }
-                        //error
                     }
                     else
                     {
@@ -371,15 +384,25 @@ int main()
                 {
                     if (returnedArray[0].compare("2") == 0)
                     {
-                        if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
+                        if(opCodeSecondFormat.find(returnedArray[2]) != opCodeSecondFormat.end())
                         {
-                            addresses[i] = addressingCounter;
-                            addressingCounter += getHex(returnedArray[0]);
+                            if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
+                            {
+                                addresses[i] = addressingCounter;
+                                addressingCounter += 2;
+                            }
+                            else
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("illegal operand");
+                                addresses[i] = addressingCounter;
+                                addressingCounter += 3;
+                            }
                         }
                         else
                         {
                             numOfError.push_back(i);
-                            typeOfError.push_back("illegal operand");
+                            typeOfError.push_back("illegal second format");
                             addresses[i] = addressingCounter;
                             addressingCounter += 3;
                         }
@@ -400,10 +423,14 @@ int main()
                                     {
                                         addresses[i] = addressingCounter;
                                         addressingCounter = symbolTable.at(t);
+                                        //warn
                                     }
                                     else
                                     {
-                                        // Error when did not find operand
+                                        numOfError.push_back(i);
+                                        typeOfError.push_back("undefined symbol in operand");
+                                        addresses[i] = addressingCounter;
+                                        addressingCounter += 3;
                                     }
                                 }
                                 else
@@ -411,6 +438,13 @@ int main()
                                     addresses[i] = addressingCounter;
                                     addressingCounter = getHex(returnedArray[3]);
                                 }
+                            }
+                            else
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("address expression is not relocatable");
+                                addresses[i] = addressingCounter;
+                                addressingCounter += 3;
                             }
 
                         }
@@ -427,10 +461,13 @@ int main()
                                         if ( std::find(namesOftable.begin(), namesOftable.end(), t) != namesOftable.end() )
                                         {
                                             addresses[i] = addressingCounter;
+                                            //warn
                                         }
                                         else
                                         {
-                                            // Error when did not find operand
+                                            numOfError.push_back(i);
+                                            typeOfError.push_back("undefined symbol in operand");
+                                            addresses[i] = addressingCounter;
                                         }
                                     }
                                     else
@@ -438,23 +475,41 @@ int main()
                                         addresses[i] = addressingCounter;
                                     }
                                 }
-                            }
-                            else
-                            {
-                                // Error there is not a label
-                            }
-                        }
-                        else
-                        {
-                            if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp))) // Handle if opp not being in the map
-                            {
-                                addresses[i] = addressingCounter;
-                                addressingCounter += getHex(returnedArray[0]);
+                                else
+                                {
+                                    numOfError.push_back(i);
+                                    typeOfError.push_back("this statement requires an operand");
+                                    addresses[i] = addressingCounter;
+                                }
                             }
                             else
                             {
                                 numOfError.push_back(i);
-                                typeOfError.push_back("illegal operand");
+                                typeOfError.push_back("this statement requires a label");
+                                addresses[i] = addressingCounter;
+                            }
+                        }
+                        else
+                        {
+                            if(opCodeThirdForth.find(returnedArray[2]) != opCodeThirdForth.end())
+                            {
+                                if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp)))
+                                {
+                                    addresses[i] = addressingCounter;
+                                    addressingCounter += getHex(returnedArray[0]);
+                                }
+                                else
+                                {
+                                    numOfError.push_back(i);
+                                    typeOfError.push_back("illegal operand");
+                                    addresses[i] = addressingCounter;
+                                    addressingCounter += 3;
+                                }
+                            }
+                            else
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("illegal operation");
                                 addresses[i] = addressingCounter;
                                 addressingCounter += 3;
                             }
@@ -462,7 +517,7 @@ int main()
                     }
                 }
             }
-            else if (checker.compare("end") == 0)//second end?!
+            else if (checker.compare("end") == 0)
             {
                 if (returnedArray[3].compare("") == 0)
                 {
@@ -497,31 +552,29 @@ int main()
                         numOfError.push_back(i);
                         typeOfError.push_back("undefined symbol in operand");
                     }
-                    if (returnedArray[3].compare("") == 0)
+                    if (returnedArray[1].compare("") != 0)
                     {
-                        if (returnedArray[1].compare("") != 0)
+                        if (namesOftable.size() == 0)
                         {
-                            if (namesOftable.size() == 0)
+                            namesOftable.push_back(returnedArray[1]);
+                            symbolTable[returnedArray[1]] = addressingCounter;
+                        }
+                        else
+                        {
+                            if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("duplicate label definition");
+                            }
+                            else
                             {
                                 namesOftable.push_back(returnedArray[1]);
                                 symbolTable[returnedArray[1]] = addressingCounter;
                             }
-                            else
-                            {
-                                if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
-                                {
-                                    numOfError.push_back(i);
-                                    typeOfError.push_back("duplicate label definition");
-                                }
-                                else
-                                {
-                                    namesOftable.push_back(returnedArray[1]);
-                                    symbolTable[returnedArray[1]] = addressingCounter;
-                                }
-                            }
                         }
-                        addresses[i] = addressingCounter;
                     }
+                    addresses[i] = addressingCounter;
+
                 }
             }
             else if (returnedArray[2].compare("-1") == 0)
@@ -532,21 +585,19 @@ int main()
             }
         }
     }
+    int j = 0;
     for (i = 0; i < lines.size(); i ++)
     {
-        cout<<addresses[i];
-        cout<<"\n";
+        cout<<addresses[i]<<endl;
+        if(!numOfError.empty() && j < numOfError.size())
+        {
+            if(numOfError.at(j) == i)
+            {
+                cout<<"***"<<typeOfError.at(j)<<endl;
+                j++;
+            }
+        }
     }
-   /* string in = "d";
-    if (IsHex(in)){
-      cout<<getHex("data");
-    } else {
-        cout<<"dww";
-    }*/
-
     delete [] addresses;
-
-    // cout<<getInt("10");
-
     return 0;
 }
