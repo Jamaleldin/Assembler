@@ -3,12 +3,14 @@
 	<iostream>
 	<bits/stdc++.h>
 
-1556088047 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
+1556154931 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
 	<iostream>
 	<bits/stdc++.h>
 	<regex>
+	<algorithm>
+	<vector>
 
-1556135181 source:d:\myfolders\csed\c_projects\systems programming\assembler2\assembler\main.cpp
+1556144444 source:d:\myfolders\csed\c_projects\systems programming\assembler2\assembler\main.cpp
 	<iostream>
 	<bits/stdc++.h>
 	<regex>

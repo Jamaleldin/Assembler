@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 arr word 9
+=======
+copy start 02
+   lda  zero
+   sta  ggg
+>>>>>>> f5d9ab0159012de6e43a4d4531a82c7efb924167

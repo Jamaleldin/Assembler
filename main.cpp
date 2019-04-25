@@ -1,14 +1,16 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <regex>
+#include <algorithm>
+#include <vector>
 
 using namespace std;
 
 string* checkingGeneralRegex (string line)
 {
-    std::regex secondFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*(,\\s*[ABLSTX])?)\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex thirdFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    std::regex forthFormate("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex secondFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*(,\\s*[ABLSTX])?)\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    std::regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#*]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     std::regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
@@ -121,6 +123,14 @@ bool checkingOpRegex(string line, string reg)
     }
 }
 
+void toUpper(basic_string<char>& s)
+{
+    for (basic_string<char>::iterator p = s.begin();
+            p != s.end(); ++p)
+    {
+        *p = toupper(*p); // toupper is for char
+    }
+}
 
 int main()
 {
@@ -196,6 +206,15 @@ int main()
         }
         inputFile.close();
     }
+    for(int i=0;i<lines.size();i++){
+        cout<<lines.at(i)<<endl;
+    }
+    int length = lines.size();
+    vector<int> numOfError;
+    vector<string> typeOfError;
+    map<string,int> symbolTable;
+    vector<string> namesOftable;
+    int *addresses = new int[length];
     int i = 0;
     int addressingCounter = 0;
     string * returnedArray;
@@ -206,45 +225,111 @@ int main()
             returnedArray = checkingGeneralRegex(lines.at(i));
             if (returnedArray[2].compare("start") == 0)
             {
-                if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
+                if (i == 0)
                 {
-                    addressingCounter = getHex(returnedArray[3]);
+                    if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("START")))
+                    {
+                        addressingCounter = getHex(returnedArray[3]);
+                        addresses[i] = addressingCounter;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                    }
                 }
-            }
-            else if (returnedArray[2].compare("END") != 0)
-            {
-                if (!returnedArray[1].compare(" "))
+                else
                 {
-                    //search in symbol table and handle cases
+                    numOfError.push_back(i);
+                    typeOfError.push_back("duplicate or misplaced START statement");
+                    addresses[i] = addressingCounter;
+                }
+
+            }
+            else if (returnedArray[2].compare("end") != 0)
+            {
+                if (returnedArray[1].compare(" ") != 0)
+                {
+                    if (namesOftable.size() == 0)
+                    {
+                        namesOftable.push_back(returnedArray[1]);
+                        symbolTable[returnedArray[1]] = addressingCounter;
+                    }
+                    else
+                    {
+                        if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("duplicate label definition");
+                        }
+                        else
+                        {
+                            namesOftable.push_back(returnedArray[1]);
+                            symbolTable[returnedArray[1]] = addressingCounter;
+                        }
+                    }
                 }
                 string op = returnedArray[2];
 
-                if (op.compare("WORD"))
+                if (op.compare("word") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
                     {
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
                         addressingCounter += 3;
                     }
                 }
-                else if (op.compare("RESW"))
+                else if (op.compare("resw") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += 3 * getHex(returnedArray[3]);
                     }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
                 }
-                else if (op.compare("RESB"))
+                else if (op.compare("resb") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += getHex(returnedArray[3]);
                     }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
+                    }
                 }
-                else if (op.compare("BYTE"))
+                else if (op.compare("byte") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("BYTE")))
                     {
+                        addresses[i] = addressingCounter;
                         addressingCounter += returnedArray[3].size() - 3;
+                    }
+                    else
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("illegal operand");
+                        addresses[i] = addressingCounter;
+                        addressingCounter += 3;
                     }
                 }
                 else
@@ -253,22 +338,111 @@ int main()
                     {
                         if (checkingOpRegex(returnedArray[3], opCodeSecondFormat.at(returnedArray[2])))
                         {
+                            addresses[i] = addressingCounter;
                             addressingCounter += getHex(returnedArray[0]);
+                        }
+                        else
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("illegal operand");
+                            addresses[i] = addressingCounter;
+                            addressingCounter += 3;
                         }
                     }
                     else if (returnedArray[0].compare("3") == 0 || returnedArray[0].compare("4") == 0)
                     {
-                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(returnedArray[2])))
+                        string opp = returnedArray[2];
+                        toUpper(opp);
+                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp)))
                         {
+                            addresses[i] = addressingCounter;
                             addressingCounter += getHex(returnedArray[0]);
+                        }
+                        else
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("illegal operand");
+                            addresses[i] = addressingCounter;
+                            addressingCounter += 3;
                         }
                     }
                 }
             }
             else if (returnedArray[2].compare("END") == 0)
             {
-
+                if (returnedArray[3].compare(" ") == 0)
+                {
+                    if (returnedArray[1].compare(" ") != 0)
+                    {
+                        if (namesOftable.size() == 0)
+                        {
+                            namesOftable.push_back(returnedArray[1]);
+                            symbolTable[returnedArray[1]] = addressingCounter;
+                        }
+                        else
+                        {
+                            if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("duplicate label definition");
+                            }
+                            else
+                            {
+                                namesOftable.push_back(returnedArray[1]);
+                                symbolTable[returnedArray[1]] = addressingCounter;
+                            }
+                        }
+                    }
+                    addresses[i] = addressingCounter;
+                }
+                else
+                {
+                    if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[3]) != namesOftable.end() )
+                    {
+                        numOfError.push_back(i);
+                        typeOfError.push_back("undefined symbol in operand");
+                    }
+                    if (returnedArray[3].compare(" ") == 0)
+                    {
+                        if (returnedArray[1].compare(" ") != 0)
+                        {
+                            if (namesOftable.size() == 0)
+                            {
+                                namesOftable.push_back(returnedArray[1]);
+                                symbolTable[returnedArray[1]] = addressingCounter;
+                            }
+                            else
+                            {
+                                if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                                {
+                                    numOfError.push_back(i);
+                                    typeOfError.push_back("duplicate label definition");
+                                }
+                                else
+                                {
+                                    namesOftable.push_back(returnedArray[1]);
+                                    symbolTable[returnedArray[1]] = addressingCounter;
+                                }
+                            }
+                        }
+                        addresses[i] = addressingCounter;
+                    }
+                }
+            }
+                else if (returnedArray[2].compare("-1") == 0)
+                {
+                    numOfError.push_back(i);
+                    typeOfError.push_back("unrecognized operation code");
+                    addresses[i] = addressingCounter;
+                }
             }
         }
-    return 0;
-}
+        for (i = 0; i < lines.size(); i ++)
+        {
+            cout<<addresses[i];
+            cout<<"\n";
+        }
+
+        delete [] addresses;
+        return 0;
+    }
