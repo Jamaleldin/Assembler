@@ -10,8 +10,12 @@
 	<algorithm>
 	<vector>
 
-1556144444 source:d:\myfolders\csed\c_projects\systems programming\assembler2\assembler\main.cpp
+1556183648 source:d:\myfolders\csed\c_projects\systems programming\assembler2\assembler\main.cpp
 	<iostream>
 	<bits/stdc++.h>
 	<regex>
+	<algorithm>
+	<vector>
+	<string>
+	<cstdlib>
 

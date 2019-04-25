@@ -60,7 +60,7 @@ string* checkingGeneralRegex (string line)
         data[0] = "3";
         data[1] = match.str(2);
         data[2] = match.str(3);
-        if (match.str(6) != " ")
+        if (match.str(6).compare("") != 0)
         {
             data[3] = match.str(7);
         }
@@ -75,7 +75,7 @@ string* checkingGeneralRegex (string line)
         data[0] = "4";
         data[1] = match.str(2);
         data[2] = match.str(5);
-        if (match.str(8) != " ")
+        if (match.str(8).compare("") != 0)
         {
             data[3] = match.str(9);
         }
@@ -137,6 +137,22 @@ void toUpper(basic_string<char>& s)
     {
         *p = toupper(*p); // toupper is for char
     }
+}
+
+void toLower(basic_string<char>& s)
+{
+    for (basic_string<char>::iterator p = s.begin();
+            p != s.end(); ++p)
+    {
+        *p = tolower(*p);
+    }
+}
+
+bool IsHex(string& in) {
+    for (char d : in) {
+        if (!isxdigit(d)) return false;
+    }
+    return true;
 }
 
 int main()
@@ -228,7 +244,9 @@ int main()
         if (!commentChecker(lines.at(i)))
         {
             returnedArray = checkingGeneralRegex(lines.at(i));
-            if (returnedArray[2].compare("start") == 0)
+            string checker = returnedArray[2];
+            toLower(checker);
+            if (checker.compare("start") == 0)
             {
                 if (i == 0)
                 {
@@ -252,31 +270,37 @@ int main()
                 }
 
             }
-            else if (returnedArray[2].compare("end") != 0)//first end
+            else if (checker.compare("end") != 0)//first end
             {
-                if (returnedArray[1].compare(" ") != 0)
+                if (returnedArray[1].compare("") != 0)
                 {
                     if (namesOftable.size() == 0)
                     {
-                        namesOftable.push_back(returnedArray[1]);
-                        symbolTable[returnedArray[1]] = addressingCounter;
+                        string t = returnedArray[1];
+                        toLower(t);
+                        namesOftable.push_back(t);
+                        symbolTable[t] = addressingCounter;
                     }
                     else
                     {
-                        if ( std::find(namesOftable.begin(), namesOftable.end(), returnedArray[1]) != namesOftable.end() )
+                        string t = returnedArray[1];
+                        toLower(t);
+                        if ( std::find(namesOftable.begin(), namesOftable.end(), t) != namesOftable.end() )
                         {
                             numOfError.push_back(i);
                             typeOfError.push_back("duplicate label definition");
                         }
                         else
                         {
-                            namesOftable.push_back(returnedArray[1]);
-                            symbolTable[returnedArray[1]] = addressingCounter;
+                            string t = returnedArray[1];
+                            toLower(t);
+                            namesOftable.push_back(t);
+                            symbolTable[t] = addressingCounter;
                         }
                     }
                 }
                 string op = returnedArray[2];
-
+                toLower(op);
                 if (op.compare("word") == 0)
                 {
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("WORD")))
@@ -297,14 +321,13 @@ int main()
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESW")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3 * getHex(returnedArray[3]);//not hex user will write decimal
+                        addressingCounter += 3 * getInt(returnedArray[3]); //not hex user will write decimal
                     }
                     else
                     {
                         numOfError.push_back(i);
                         typeOfError.push_back("illegal operand");
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3;
                     }
                 }
                 else if (op.compare("resb") == 0)
@@ -312,14 +335,13 @@ int main()
                     if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at("RESB")))
                     {
                         addresses[i] = addressingCounter;
-                        addressingCounter += getHex(returnedArray[3]);
+                        addressingCounter += getInt(returnedArray[3]);
                     }
                     else
                     {
                         numOfError.push_back(i);
                         typeOfError.push_back("illegal operand");
                         addresses[i] = addressingCounter;
-                        addressingCounter += 3;
                     }
                 }
                 else if (op.compare("byte") == 0)
@@ -328,9 +350,14 @@ int main()
                     {
                         addresses[i] = addressingCounter;
                         if((returnedArray[3].size() - 3) % 2 == 0)
+                        {
                             addressingCounter += (returnedArray[3].size() - 3)/2;//every 2 hex is byte it must be even size
+                        }
                         else
-                            //error
+                        {
+
+                        }
+                        //error
                     }
                     else
                     {
@@ -361,26 +388,85 @@ int main()
                     {
                         string opp = returnedArray[2];
                         toUpper(opp);
-                        if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp)))
+                        if (opp.compare("ORG") == 0)
                         {
-                            addresses[i] = addressingCounter;
-                            addressingCounter += getHex(returnedArray[0]);
+                            if (returnedArray[3].compare("") != 0)
+                            {
+                                if (!IsHex(returnedArray[3]))
+                                {
+                                    string t = returnedArray[3];
+                                    toLower(t);
+                                    if ( std::find(namesOftable.begin(), namesOftable.end(), t) != namesOftable.end() )
+                                    {
+                                        addresses[i] = addressingCounter;
+                                        addressingCounter = symbolTable.at(t);
+                                    }
+                                    else
+                                    {
+                                        // Error when did not find operand
+                                    }
+                                }
+                                else
+                                {
+                                    addresses[i] = addressingCounter;
+                                    addressingCounter = getHex(returnedArray[3]);
+                                }
+                            }
+
+                        }
+                        else if (opp.compare("EQU") == 0)
+                        {
+                            if (returnedArray[1].compare("") != 0)
+                            {
+                                if (returnedArray[3].compare("") != 0)
+                                {
+                                    if (!IsHex(returnedArray[3]))
+                                    {
+                                        string t = returnedArray[1];
+                                        toLower(t);
+                                        if ( std::find(namesOftable.begin(), namesOftable.end(), t) != namesOftable.end() )
+                                        {
+                                            addresses[i] = addressingCounter;
+                                        }
+                                        else
+                                        {
+                                            // Error when did not find operand
+                                        }
+                                    }
+                                    else
+                                    {
+                                        addresses[i] = addressingCounter;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Error there is not a label
+                            }
                         }
                         else
                         {
-                            numOfError.push_back(i);
-                            typeOfError.push_back("illegal operand");
-                            addresses[i] = addressingCounter;
-                            addressingCounter += 3;
+                            if (checkingOpRegex(returnedArray[3], opCodeThirdForth.at(opp))) // Handle if opp not being in the map
+                            {
+                                addresses[i] = addressingCounter;
+                                addressingCounter += getHex(returnedArray[0]);
+                            }
+                            else
+                            {
+                                numOfError.push_back(i);
+                                typeOfError.push_back("illegal operand");
+                                addresses[i] = addressingCounter;
+                                addressingCounter += 3;
+                            }
                         }
                     }
                 }
             }
-            else if (returnedArray[2].compare("END") == 0)//second end?!
+            else if (checker.compare("end") == 0)//second end?!
             {
-                if (returnedArray[3].compare(" ") == 0)
+                if (returnedArray[3].compare("") == 0)
                 {
-                    if (returnedArray[1].compare(" ") != 0)
+                    if (returnedArray[1].compare("") != 0)
                     {
                         if (namesOftable.size() == 0)
                         {
@@ -411,9 +497,9 @@ int main()
                         numOfError.push_back(i);
                         typeOfError.push_back("undefined symbol in operand");
                     }
-                    if (returnedArray[3].compare(" ") == 0)
+                    if (returnedArray[3].compare("") == 0)
                     {
-                        if (returnedArray[1].compare(" ") != 0)
+                        if (returnedArray[1].compare("") != 0)
                         {
                             if (namesOftable.size() == 0)
                             {
@@ -438,20 +524,29 @@ int main()
                     }
                 }
             }
-                else if (returnedArray[2].compare("-1") == 0)
-                {
-                    numOfError.push_back(i);
-                    typeOfError.push_back("unrecognized operation code");
-                    addresses[i] = addressingCounter;
-                }
+            else if (returnedArray[2].compare("-1") == 0)
+            {
+                numOfError.push_back(i);
+                typeOfError.push_back("unrecognized operation code");
+                addresses[i] = addressingCounter;
             }
         }
-        for (i = 0; i < lines.size(); i ++)
-        {
-            cout<<addresses[i];
-            cout<<"\n";
-        }
-
-        delete [] addresses;
-        return 0;
     }
+    for (i = 0; i < lines.size(); i ++)
+    {
+        cout<<addresses[i];
+        cout<<"\n";
+    }
+   /* string in = "d";
+    if (IsHex(in)){
+      cout<<getHex("data");
+    } else {
+        cout<<"dww";
+    }*/
+
+    delete [] addresses;
+
+    // cout<<getInt("10");
+
+    return 0;
+}

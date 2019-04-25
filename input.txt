@@ -12,4 +12,6 @@ LOOP     LDA     DATA,X
          JLT     LOOP
          J       *
 DATA     RESW    100
+set      equ     data
+da       word    1
          END
