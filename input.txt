@@ -6,7 +6,7 @@ LOOP     LDA     DATA,X
          ADD     #1
          STA     DATA,X
          RMO     X,A
-loop     ADD     #3
+         ADD     #3
          COMP    #300
          RMO     A,X
          JLT     LOOP

@@ -1,0 +1,21 @@
+0 Q1       start   0
+0          LDX     #0
+3          LDA     #0
+6 LOOP     LDA     DATA,X
+9          MUL     #2
+c          ADD     #1
+f          STA     DATA,X
+12          RMO     X,A
+14          ADD     #3
+17          COMP    #300
+1a          RMO     A,X
+1c          JLT     LOOP
+1f          J       *
+22 DATA     RESW    100
+14e set      equ     data
+14e da       word    1
+151          END
+Label: 'da', address: '14e'
+Label: 'data', address: '22'
+Label: 'loop', address: '6'
+Label: 'set', address: '14e'
