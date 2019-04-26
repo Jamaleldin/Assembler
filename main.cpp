@@ -464,11 +464,14 @@ int main()
                                     {
                                         if (!IsHex(returnedArray[3]))
                                         {
-                                            string t = returnedArray[1];
+                                            string t = returnedArray[3];
                                             toLower(t);
                                             if ( std::find(namesOftable.begin(), namesOftable.end(), t) != namesOftable.end() )
                                             {
                                                 addresses[i] = addressingCounter;
+                                                string opCode = returnedArray[1];
+                                                toLower(opCode);
+                                                symbolTable[opCode] = symbolTable.at(t);
                                             }
                                             else
                                             {
@@ -480,6 +483,9 @@ int main()
                                         else
                                         {
                                             addresses[i] = addressingCounter;
+                                            string opCode = returnedArray[1];
+                                            toLower(opCode);
+                                            symbolTable[opCode] = getHex(returnedArray[3]);
                                         }
                                     }
                                     else
@@ -647,6 +653,10 @@ int main()
                     addresses[i] = addressingCounter;
                 }
                 startVisited = true;
+            }
+            else
+            {
+                addresses[i] = " ";
             }
         }
         ofstream outFile;
