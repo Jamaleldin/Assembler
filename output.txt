@@ -1,19 +1,15 @@
-0 Q1       start   0
-0          LDX     #0
-3          LDA     #0
-6 start 0
-***duplicate or misplaced START statement
-6 LOOP     LDA     DATA,X
-9          MUL     #2
-c          ADD     #1
-f          STA     DATA,X
-12          RMO     X,A
-14          ADD     #3
-17          COMP    #300
-1a          RMO     A,X
-1c          JLT     LOOP
-1f          J       *
-22 DATA     RESW    100
-14e set      equ     data
-14e da       word    1
-151          END
+.23456789012345678901234567890123456789
+100       progA    start   0100
+100                LDA     BETA
+103                DIV     GAMMA
+106                STA     AlPHA
+109                J       *
+10C       ALPHA    RESW    1
+10F       BETA     WORD    8
+112       GAMMA    WORD    2
+115                END
+=============================================
+Label     Address   
+alpha     268       
+beta      271       
+gamma     274       

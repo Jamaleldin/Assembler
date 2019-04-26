@@ -32,7 +32,13 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="InOutFile.cpp" />
+		<Unit filename="InOutFile.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="passOne.cpp" />
+		<Unit filename="passOne.h" />
+		<Unit filename="passOneAlgorithm.cpp" />
+		<Unit filename="passOneAlgorithm.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
