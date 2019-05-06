@@ -46,3 +46,10 @@
 	<string>
 	<cstdlib>
 
+1557154431 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\expressionevaluator.cpp
+	"ExpressionEvaluator.h"
+
+1557154429 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\expressionevaluator.h
+	<iostream>
+	<bits/stdc++.h>
+

@@ -9,7 +9,7 @@ class ExpressionEvaluator
 {
     public:
         ExpressionEvaluator();
-        string evaluate(string firstOperand, string op, string secondOperand);
+        string evaluate(string expression);
 
     protected:
 

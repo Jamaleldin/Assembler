@@ -4,7 +4,7 @@ ExpressionEvaluator::ExpressionEvaluator()
 {
     //ctor
 }
-string ExpressionEvaluator::evaluate(string firstOperand, string op, string secondOperand)
+string ExpressionEvaluator::evaluate(string expression)
 {
     //write logic here
 }
