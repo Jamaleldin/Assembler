@@ -8,7 +8,7 @@ class passOne
 {
     public:
         passOne();
-        void initializMaps(map<string, string> &opCodeSecondFormat , map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives);
+        void initializMaps(map<string, string> &opCodeSecondFormat , map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opCode, map<string, string> &regestersOpCode);
         string* checkingGeneralRegex (string line);
         bool commentChecker(string mainStr);
         int getHex(string hexstr);

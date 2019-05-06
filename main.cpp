@@ -14,11 +14,13 @@ int main()
 {
     /*initializing maps
     ====================*/
-    map<string,string> opCodeSecondFormat;
-    map<string,string> opCodeThirdForth;
-    map<string,string> opCodeDirectives;
+    map<string, string> opCodeSecondFormat;
+    map<string, string> opCodeThirdForth;
+    map<string, string> opCodeDirectives;
+    map<string, string> opCode;
+    map<string, string> regestersOpCode;
     passOne maps;
-    maps.initializMaps(opCodeSecondFormat,opCodeThirdForth,opCodeDirectives);
+    maps.initializMaps(opCodeSecondFormat, opCodeThirdForth, opCodeDirectives, opCode, regestersOpCode);
     /*scanning input from user
     ==========================*/
     string inputFileName;
@@ -32,7 +34,8 @@ int main()
     =============*/
     passOneAlgorithm pass;
     pass.setLength(lines.size());
-    map<string, int>symTable = pass.doPass(lines,opCodeSecondFormat,opCodeThirdForth,opCodeDirectives);
+    pass.doPass(lines,opCodeSecondFormat,opCodeThirdForth,opCodeDirectives);
+    map<string, int>symTable = pass.getSymbolTable();
     /*writing to outputFile
     =======================*/
     IO.writtingFile(pass.getSymbolTable(), lines, pass.getNumOfError(), pass.getTypeOfError(), pass.getAdresses());

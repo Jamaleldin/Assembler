@@ -40,10 +40,10 @@ int* passOneAlgorithm::getAdresses()
 {
     return addresses;
 }
-map<string,int> passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecondFormat,map<string,string> opCodeThirdForth,map<string,string> opCodeDirectives)
+void passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecondFormat,map<string,string> opCodeThirdForth,map<string,string> opCodeDirectives)
 {
     passOne one;
-    for (int i = 0; i < lines.size(); i++)
+    for (unsigned int i = 0; i < lines.size(); i++)
         {
             if (!one.commentChecker(lines.at(i)))
             {
@@ -375,6 +375,12 @@ map<string,int> passOneAlgorithm::doPass(vector<string>lines,map<string,string> 
                                 }
                             }
                         }
+                        else if (returnedArray[2].compare("-1") == 0)
+                        {
+                            numOfError.push_back(i);
+                            typeOfError.push_back("unrecognized operation code");
+                            addresses[i] = addressingCounter;
+                        }
                     }
                 }
                 else if (returnedArray[2].compare("END") == 0)
@@ -457,5 +463,10 @@ map<string,int> passOneAlgorithm::doPass(vector<string>lines,map<string,string> 
                 }
                 startVisited = true;
             }
+        }
+        if(!endVisited)
+        {
+            numOfError.push_back(lines.size()-1);
+            typeOfError.push_back("missing end statement!");
         }
 }

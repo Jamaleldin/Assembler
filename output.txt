@@ -2,14 +2,16 @@
 100       progA    start   0100
 100                LDA     BETA
 103                DIV     GAMMA
-106                STA     AlPHA
-109                J       *
-10C       ALPHA    RESW    1
-10F       BETA     WORD    8
-112       GAMMA    WORD    2
-115                END
-=============================================
-Label     Address   
-alpha     268       
-beta      271       
-gamma     274       
+106                +STA     AlPHA
+10A         addR A, X
+10C                  stg #8
+***illegal operation
+.comment line
+10C                J       *
+10F       ALPHA    RESW    1
+112       BETA     WORD    8
+115       beta     word 88
+***duplicate label definition
+118       GAMMA    WORD    2
+11B       testlabel end
+***unrecognized operation code

@@ -16,7 +16,7 @@ class passOneAlgorithm
         vector<string> getTypeOfError();
         vector<int> getNumOfError();
         int* getAdresses();
-        map<string,int> doPass(vector<string>lines,map<string,string> opCodeSecondFormat,map<string,string> opCodeThirdForth,map<string,string> opCodeDirectives);
+        void doPass(vector<string>lines,map<string,string> opCodeSecondFormat,map<string,string> opCodeThirdForth,map<string,string> opCodeDirectives);
     protected:
 
     private:

@@ -6,7 +6,7 @@ passOne::passOne()
 {
     //ctor
 }
-void passOne::initializMaps(map<string, string> &opCodeSecondFormat , map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives)
+void passOne::initializMaps(map<string, string> &opCodeSecondFormat , map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opTable, map<string, string> &regestersOpCode)
 {
     string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
     /*Map for second format
@@ -59,9 +59,59 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat , map<string
     opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
     opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
     opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|([a-fA-F0-9]{1,4})|(\\*))$";
-    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|([a-fA-F0-9]{1,4})|(\\*))$";
+    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|([a-fA-F0-9]{1,4})|(\\*))$";
     opCodeDirectives["NOBASE"] = "^$";
+    /*Map for objectCode
+    ====================*/
+    opTable["ADD"] = "00011000";
+    opTable["ADDR"] = "10010000";
+    opTable["CLEAR"] = "10110100";
+    opTable["COMP"] = "00101000";
+    opTable["COMPR"] = "10100000";
+    opTable["DIV"] = "00100100";
+    opTable["DIVR"] = "10011100";
+    opTable["J"] = "00111100";
+    opTable["JEQ"] = "00110000";
+    opTable["JLT"] = "00111000";
+    opTable["JGT"] = "00110100";
+    opTable["JSUB"] = "01001000";
+    opTable["LDA"] = "00000000";
+    opTable["LDB"] = "01101000";
+    opTable["LDCH"] = "01010000";
+    opTable["LDL"] = "00001000";
+    opTable["LDS"] = "01101100";
+    opTable["LDT"] = "01110100";
+    opTable["LDX"] = "00000100";
+    opTable["MUL"] = "00100000";
+    opTable["MULR"] = "10011000";
+    opTable["RMO"] = "10101100";
+    opTable["RSUB"] = "01001100";
+    opTable["STA"] = "00001100";
+    opTable["STB"] = "01111000";
+    opTable["STCH"] = "01010100";
+    opTable["STL"] = "00010100";
+    opTable["STS"] = "01111100";
+    opTable["STT"] = "10000100";
+    opTable["STX"] = "00010000";
+    opTable["SUB"] = "00011100";
+    opTable["SUBR"] = "10010100";
+    opTable["RD"] = "11011000";
+    opTable["TD"] = "11100000";
+    opTable["WD"] = "11011100";
+    opTable["TIX"] = "00101100";
+    opTable["TIXR"] = "10111000";
+    /*Map for registers
+    ===================*/
+    regestersOpCode["A"] = "0000";
+    regestersOpCode["X"] = "0001";
+    regestersOpCode["L"] = "0010";
+    regestersOpCode["B"] = "0011";
+    regestersOpCode["S"] = "0100";
+    regestersOpCode["T"] = "0101";
+    regestersOpCode["F"] = "0110";
+    regestersOpCode["PC"] = "1000";
+    regestersOpCode["SW"] = "1001";
 }
 string* passOne::checkingGeneralRegex (string line)
 {
@@ -69,7 +119,7 @@ string* passOne::checkingGeneralRegex (string line)
     regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    regex endProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     string* data = new string[4];
     string sp (line);
@@ -85,9 +135,9 @@ string* passOne::checkingGeneralRegex (string line)
     else if(regex_search(sp, match, endProg) == true)
     {
         data[0] = "0";
-        data[1] = match.str(2);
-        data[2] = match.str(3);
-        data[3]= match.str(5);
+        data[1] = "";
+        data[2] = match.str(1);
+        data[3]= match.str(4);
     }
     else if(regex_search(sp, match, returnSub) == true)
     {

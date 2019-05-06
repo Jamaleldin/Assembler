@@ -2,9 +2,13 @@
 progA    start   0100
          LDA     BETA
          DIV     GAMMA
-         STA     AlPHA
+         +STA     AlPHA
+  addR A, X
+           stg #8
+.comment line
          J       *
 ALPHA    RESW    1
 BETA     WORD    8
+beta     word 88
 GAMMA    WORD    2
-         END
+testlabel end
