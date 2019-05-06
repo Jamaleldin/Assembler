@@ -6,7 +6,7 @@ passOne::passOne()
 {
     //ctor
 }
-void passOne::initializMaps(map<string, string> &opCodeSecondFormat , map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opTable, map<string, string> &regestersOpCode)
+void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opTable, map<string, string> &regestersOpCode)
 {
     string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
     /*Map for second format
@@ -58,9 +58,9 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat , map<string
     opCodeDirectives["RESB"] = "^[0-9]{1,4}$";
     opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
     opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
-    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|([a-fA-F0-9]{1,4})|(\\*))$";
+    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|([a-fA-F0-9]{1,4})|(\\*))$";
+    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["NOBASE"] = "^$";
     /*Map for objectCode
     ====================*/
@@ -186,6 +186,24 @@ string* passOne::checkingGeneralRegex (string line)
     }
     return data;
 }
+
+string* passOne::getExpressionGroup(string expression)
+{
+    regex expressionRegex("^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$");
+
+    string* groups = new string[3];
+    string sp (expression);
+    smatch match;
+
+    if(regex_search(sp, match, expressionRegex) == true)
+    {
+        groups[0] = match.str(8);
+        groups[1] = match.str(9);
+        groups[2] = match.str(10);
+    }
+    return groups;
+}
+
 bool passOne::commentChecker(string mainStr)
 {
     // std::string::find returns 0 if toMatch is found at starting
