@@ -32,6 +32,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="ExpressionEvaluator.cpp" />
+		<Unit filename="ExpressionEvaluator.h" />
 		<Unit filename="InOutFile.cpp" />
 		<Unit filename="InOutFile.h" />
 		<Unit filename="main.cpp" />
