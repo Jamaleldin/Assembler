@@ -187,6 +187,21 @@ string* passOne::checkingGeneralRegex (string line)
     return data;
 }
 
+bool passOne::expressionChecker(string oprand)
+{
+    regex r("^(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8}))$");
+    string sp (oprand);
+    smatch match;
+
+    if(regex_search(sp, match, r) == true)
+    {
+        return true;
+    } else
+    {
+        return false;
+    }
+}
+
 string* passOne::getExpressionGroup(string expression)
 {
     regex expressionRegex("^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$");
