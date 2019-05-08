@@ -9,7 +9,7 @@ class PassTwoAlgorithm
 {
     public:
         PassTwoAlgorithm();
-        string* doPass(vector<string> lines, map<string, int> symTable, map<string, string> opTable, map<string, string> regestersOpCode);
+        vector<string> doPass(vector<string> lines, map<string, int> symTable, map<string, string> opTable, map<string, string> regestersOpCode);
 
     protected:
 

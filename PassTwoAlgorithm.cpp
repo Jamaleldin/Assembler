@@ -4,8 +4,9 @@ PassTwoAlgorithm::PassTwoAlgorithm()
 {
     //ctor
 }
-string* PassTwoAlgorithm::doPass(vector<string> lines, map<string, int> symTable, map<string, string> opTable, map<string, string> regestersOpCode)
+vector<string> PassTwoAlgorithm::doPass(vector<string> lines, map<string, int> symTable, map<string, string> opTable, map<string, string> regestersOpCode)
 {
+    vector<string> opCodes;
     for(unsigned int i = 0; i<lines.size(); i++)
     {
         string* returndInfo = getingLineInfo(lines.at(i));
@@ -13,6 +14,7 @@ string* PassTwoAlgorithm::doPass(vector<string> lines, map<string, int> symTable
         string operation = returndInfo[1];
         string operand = returndInfo[2];
     }
+    return opCodes;
 }
 
 string* PassTwoAlgorithm::getingLineInfo(string line)
@@ -21,7 +23,7 @@ string* PassTwoAlgorithm::getingLineInfo(string line)
     regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    string* data = new string[4];
+    string* data = new string[3];
     string sp (line);
     smatch match;
 

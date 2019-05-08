@@ -18,10 +18,10 @@ int main()
     map<string, string> opCodeSecondFormat;
     map<string, string> opCodeThirdForth;
     map<string, string> opCodeDirectives;
-    map<string, string> opCode;
-    map<string, string> regestersOpCode;
+    map<string, string> opTable;
+    map<string, string> regestersOpTable;
     passOne maps;
-    maps.initializMaps(opCodeSecondFormat, opCodeThirdForth, opCodeDirectives, opCode, regestersOpCode);
+    maps.initializMaps(opCodeSecondFormat, opCodeThirdForth, opCodeDirectives, opTable, regestersOpTable);
     /*scanning input from user
     ==========================*/
     string inputFileName;
@@ -40,5 +40,9 @@ int main()
     /*writing to outputFile
     =======================*/
     IO.writtingFile(pass.getSymbolTable(), lines, pass.getNumOfError(), pass.getTypeOfError(), pass.getAdresses());
+    /*doing pass2
+    =============*/
+    PassTwoAlgorithm passTwo;
+    vector<string> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable);
     return 0;
 }
