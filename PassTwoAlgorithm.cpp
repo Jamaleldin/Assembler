@@ -8,6 +8,10 @@ string* PassTwoAlgorithm::doPass(vector<string> lines, map<string, int> symTable
 {
     for(unsigned int i = 0; i<lines.size(); i++)
     {
+        string* returndInfo = getingLineInfo(lines.at(i));
+        string format = returndInfo[0];
+        string operation = returndInfo[1];
+        string operand = returndInfo[2];
     }
 }
 
@@ -18,9 +22,10 @@ string* PassTwoAlgorithm::getingLineInfo(string line)
     regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     string* data = new string[4];
+    string sp (line);
     smatch match;
 
-    if(regex_search(line, match, returnSub) == true)
+    if(regex_search(sp, match, returnSub) == true)
     {
         if (match.str(4) != "")
         {
@@ -33,7 +38,7 @@ string* PassTwoAlgorithm::getingLineInfo(string line)
         data[1] = match.str(5);
         data[2] = "";
     }
-    else if(regex_search(line, match, secondFormat) == true)
+    else if(regex_search(sp, match, secondFormat) == true)
     {
         data[0] = "2";
         data[1] = match.str(3);
@@ -42,24 +47,18 @@ string* PassTwoAlgorithm::getingLineInfo(string line)
         data[2] = registers;
 
     }
-    else if(regex_search(line, match, thirdFormat) == true)
+    else if(regex_search(sp, match, thirdFormat) == true)
     {
         data[0] = "3";
-        data[1] = match.str(2);
-        data[2] = match.str(3);
+        data[1] = match.str(3);
+        data[2] = match.str(4);
     }
-    else if(regex_search(line, match, forthFormat) == true)
+    else if(regex_search(sp, match, forthFormat) == true)
     {
         data[0] = "4";
-        data[1] = match.str(2);
-        data[2] = match.str(5);
+        data[1] = match.str(5);
+        data[2] = match.str(6);
 
-    }
-    else
-    {
-        data[0] = "-1";
-        data[1] = "-1";
-        data[2] = "-1";
     }
     return data;
 }

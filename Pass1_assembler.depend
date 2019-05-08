@@ -15,16 +15,11 @@
 	<bits/stdc++.h>
 	<regex>
 
-1557315995 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
+1557316910 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
 	"passOne.h"
-	<bits/stdc++.h>
-	<regex>
 
-1556313179 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.cpp
+1557316998 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.cpp
 	"InOutFile.h"
-	<bits/stdc++.h>
-	<iostream>
-	"passOne.h"
 
 1557316998 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.h
 	<bits/stdc++.h>
@@ -39,13 +34,8 @@
 	<cstdlib>
 	"passOne.h"
 
-1557145015 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passonealgorithm.cpp
+1557316890 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passonealgorithm.cpp
 	"passOneAlgorithm.h"
-	<bits/stdc++.h>
-	<regex>
-	<algorithm>
-	<string>
-	<cstdlib>
 
 1557154431 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\expressionevaluator.cpp
 	"ExpressionEvaluator.h"
