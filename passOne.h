@@ -18,7 +18,9 @@ class passOne
         void toUpper(basic_string<char>& s);
         void toLower(basic_string<char>& s);
         bool IsHex(string& in);
-
+        bool expressionChecker(string operand);
+        int* expressionEvaluator(string first, string second, string operation, vector<string> absLabels, map<string,int> symbolTable, vector<string> namesOftable);
+        string* getExpressionGroup(string expression);
     protected:
 
     private:
