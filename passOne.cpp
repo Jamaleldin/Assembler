@@ -208,7 +208,7 @@ int* passOne::expressionEvaluator(string first, string second, string operation,
 
     int* flags = new int[2];
 
-    if (!IsHex(first))
+    if (!strIsDigit(first))
     {
         if (!(std::find(namesOftable.begin(), namesOftable.end(), first) != namesOftable.end()))
         {
@@ -218,7 +218,7 @@ int* passOne::expressionEvaluator(string first, string second, string operation,
         }
     }
 
-    if (!IsHex(second))
+    if (!strIsDigit(second))
     {
         if (!(std::find(namesOftable.begin(), namesOftable.end(), second) != namesOftable.end()))
         {
@@ -241,41 +241,41 @@ int* passOne::expressionEvaluator(string first, string second, string operation,
         op = 3;
     }
 
-    if (IsHex(first) && IsHex(second))
+    if (strIsDigit(first) && strIsDigit(second))
     {
         switch (op)
         {
-            case 0 : flags[0] = getHex(first) + getHex(second); flags[1] = 0; return flags;
-            case 1 : flags[0] = getHex(first) - getHex(second); flags[1] = 0; return flags;
-            case 2 : flags[0] = getHex(first) * getHex(second); flags[1] = 0; return flags;
-            case 3 : flags[0] = getHex(first) / getHex(second); flags[1] = 0; return flags;
+            case 0 : flags[0] = getInt(first) + getInt(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = getInt(first) - getInt(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = getInt(first) * getInt(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = getInt(first) / getInt(second); flags[1] = 0; return flags;
         }
-    } else if (IsHex(first) && std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end())
+    } else if (strIsDigit(first) && std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end())
     {
         switch (op)
         {
-            case 0 : flags[0] = getHex(first) + symbolTable.at(second); flags[1] = 0; return flags;
-            case 1 : flags[0] = getHex(first) - symbolTable.at(second); flags[1] = 0; return flags;
-            case 2 : flags[0] = getHex(first) * symbolTable.at(second); flags[1] = 0; return flags;
-            case 3 : flags[0] = getHex(first) / symbolTable.at(second); flags[1] = 0; return flags;
+            case 0 : flags[0] = getInt(first) + symbolTable.at(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = getInt(first) - symbolTable.at(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = getInt(first) * symbolTable.at(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = getInt(first) / symbolTable.at(second); flags[1] = 0; return flags;
         }
-    } else if (IsHex(first) && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
+    } else if (strIsDigit(first) && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
     {
         switch (op)
         {
-            case 0 : flags[0] = getHex(first) + symbolTable.at(second); flags[1] = 1; return flags;
+            case 0 : flags[0] = getInt(first) + symbolTable.at(second); flags[1] = 1; return flags;
             case 1 : flags[0] = -1; return flags;
             case 2 : flags[0] = -1; return flags;
             case 3 : flags[0] = -1; return flags;
         }
-    } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && IsHex(second))
+    } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && strIsDigit(second))
     {
         switch (op)
         {
-            case 0 : flags[0] = symbolTable.at(first) + getHex(second); flags[1] = 0; return flags;
-            case 1 : flags[0] = symbolTable.at(first) - getHex(second); flags[1] = 0; return flags;
-            case 2 : flags[0] = symbolTable.at(first) * getHex(second); flags[1] = 0; return flags;
-            case 3 : flags[0] = symbolTable.at(first) / getHex(second); flags[1] = 0; return flags;
+            case 0 : flags[0] = symbolTable.at(first) + getInt(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - getInt(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = symbolTable.at(first) * getInt(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = symbolTable.at(first) / getInt(second); flags[1] = 0; return flags;
         }
     } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
     {
@@ -295,12 +295,12 @@ int* passOne::expressionEvaluator(string first, string second, string operation,
             case 2 : flags[0] = symbolTable.at(first) * symbolTable.at(second); flags[1] = 0; return flags;
             case 3 : flags[0] = symbolTable.at(first) / symbolTable.at(second); flags[1] = 0; return flags;
         }
-    } else if (!(std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end()) && IsHex(second))
+    } else if (!(std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end()) && strIsDigit(second))
     {
         switch (op)
         {
-            case 0 : flags[0] = symbolTable.at(first) + getHex(second); flags[1] = 1; return flags;
-            case 1 : flags[0] = symbolTable.at(first) - getHex(second); flags[1] = 1; return flags;
+            case 0 : flags[0] = symbolTable.at(first) + getInt(second); flags[1] = 1; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - getInt(second); flags[1] = 1; return flags;
             case 2 : flags[0] = -1; flags[1] = -1; return flags;
             case 3 : flags[0] = -1; flags[1] = -1; return flags;
         }

@@ -13,7 +13,7 @@ F                  MUL     #10
 1A                 RD      DEVF2
 1D                 SUB     #48
 20                 ADDR    S,A
-22        gg       equ     5
+22        gg       equ     loop1-loop2
 22        ff       lda     #0
 25                 J       *
 28        DEVF2    BYTE    X'F3'
@@ -22,6 +22,6 @@ F                  MUL     #10
 Label     Address   
 devf2     40        
 ff        34        
-gg        5         
+gg        -20       
 loop1     0         
 loop2     20        
