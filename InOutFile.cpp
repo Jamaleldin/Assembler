@@ -1,8 +1,5 @@
 #include "InOutFile.h"
-#include <bits/stdc++.h>
-#include <iostream>
-#include "passOne.h"
-using namespace std;
+
 passOne one;
 InOutFile::InOutFile()
 {

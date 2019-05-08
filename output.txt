@@ -1,17 +1,27 @@
-.23456789012345678901234567890123456789
-100       progA    start   0100
-100                LDA     BETA
-103                DIV     GAMMA
-106                +STA     AlPHA
-10A         addR A, X
-10C                  stg #8
-***illegal operation
-.comment line
-10C                J       *
-10F       ALPHA    RESW    1
-112       BETA     WORD    8
-115       beta     word 88
-***duplicate label definition
-118       GAMMA    WORD    2
-11B       testlabel end
-***unrecognized operation code
+.23456789012345678
+.
+0                  START   0000
+0         LOOP1    TD      DEVF2
+3                  JEQ     LOOP1
+6                  LDA     #0
+9                  RD      DEVF2
+C                  SUB     #48
+F                  MUL     #10
+12                 RMO     A,S
+14        LOOP2    TD      DEVF2
+17                 JEQ     LOOP2
+1A                 RD      DEVF2
+1D                 SUB     #48
+20                 ADDR    S,A
+22        gg       equ     5
+22        ff       lda     #0
+25                 J       *
+28        DEVF2    BYTE    X'F3'
+29                 END
+=============================================
+Label     Address   
+devf2     40        
+ff        34        
+gg        5         
+loop1     0         
+loop2     20        

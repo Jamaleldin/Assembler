@@ -1,14 +1,20 @@
-.23456789012345678901234567890123456789
-progA    start   0100
-         LDA     BETA
-         DIV     GAMMA
-         +STA     AlPHA
-  addR A, X
-           stg #8
-.comment line
+.23456789012345678
+.
+         START   0000
+LOOP1    TD      DEVF2
+         JEQ     LOOP1
+         LDA     #0
+         RD      DEVF2
+         SUB     #48
+         MUL     #10
+         RMO     A,S
+LOOP2    TD      DEVF2
+         JEQ     LOOP2
+         RD      DEVF2
+         SUB     #48
+         ADDR    S,A
+gg       equ     5
+ff       lda     #0
          J       *
-ALPHA    RESW    1
-BETA     WORD    8
-beta     word 88
-GAMMA    WORD    2
-testlabel end
+DEVF2    BYTE    X'F3'
+         END

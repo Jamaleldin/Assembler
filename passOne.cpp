@@ -1,8 +1,4 @@
 #include "passOne.h"
-#include <bits/stdc++.h>
-#include <regex>
-
-using namespace std;
 
 passOne::passOne()
 {
@@ -60,9 +56,9 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string,
     opCodeDirectives["RESB"] = "^[0-9]{1,4}$";
     opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
     opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
-    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["NOBASE"] = "^$";
     /*Map for objectCode
     ====================*/
@@ -189,13 +185,13 @@ string* passOne::checkingGeneralRegex (string line)
     return data;
 }
 
-bool passOne::expressionChecker(string oprand)
+bool passOne::expressionChecker(string operand)
 {
-    regex r("^(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8}))$");
-    string sp (oprand);
-    smatch match;
+    regex r("^(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8}))$");
 
-    if(regex_search(sp, match, r) == true)
+
+
+    if(regex_match(operand, r) == true)
     {
         return true;
     } else
@@ -204,9 +200,134 @@ bool passOne::expressionChecker(string oprand)
     }
 }
 
+int* passOne::expressionEvaluator(string first, string second, string operation, vector<string> absLabels, map<string,int> symbolTable, vector<string> namesOftable)
+{
+    toLower(first);
+    toLower(second);
+    int op = 0;
+
+    int* flags = new int[2];
+
+    if (!IsHex(first))
+    {
+        if (!(std::find(namesOftable.begin(), namesOftable.end(), first) != namesOftable.end()))
+        {
+            flags[0] = -2;
+            flags[1] = -2;
+            return flags;
+        }
+    }
+
+    if (!IsHex(second))
+    {
+        if (!(std::find(namesOftable.begin(), namesOftable.end(), second) != namesOftable.end()))
+        {
+            flags[0] = -2;
+            flags[1] = -2;
+            return flags;
+        }
+    }
+
+    if (operation.compare("+") == 0){
+        op = 0;
+    } else if (operation.compare("-") == 0)
+    {
+        op = 1;
+    } else if (operation.compare("*") == 0)
+    {
+        op = 2;
+    } else if (operation.compare("/") == 0)
+    {
+        op = 3;
+    }
+
+    if (IsHex(first) && IsHex(second))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = getHex(first) + getHex(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = getHex(first) - getHex(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = getHex(first) * getHex(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = getHex(first) / getHex(second); flags[1] = 0; return flags;
+        }
+    } else if (IsHex(first) && std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end())
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = getHex(first) + symbolTable.at(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = getHex(first) - symbolTable.at(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = getHex(first) * symbolTable.at(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = getHex(first) / symbolTable.at(second); flags[1] = 0; return flags;
+        }
+    } else if (IsHex(first) && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = getHex(first) + symbolTable.at(second); flags[1] = 1; return flags;
+            case 1 : flags[0] = -1; return flags;
+            case 2 : flags[0] = -1; return flags;
+            case 3 : flags[0] = -1; return flags;
+        }
+    } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && IsHex(second))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = symbolTable.at(first) + getHex(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - getHex(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = symbolTable.at(first) * getHex(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = symbolTable.at(first) / getHex(second); flags[1] = 0; return flags;
+        }
+    } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = symbolTable.at(first) + symbolTable.at(second); flags[1] = 1; return flags;
+            case 1 : flags[0] = -1; flags[1] = -1; return flags;
+            case 2 : flags[0] = -1; flags[1] = -1; return flags;
+            case 3 : flags[0] = -1; flags[1] = -1; return flags;
+        }
+    } else if (std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end() && std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end())
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = symbolTable.at(first) + symbolTable.at(second); flags[1] = 0; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - symbolTable.at(second); flags[1] = 0; return flags;
+            case 2 : flags[0] = symbolTable.at(first) * symbolTable.at(second); flags[1] = 0; return flags;
+            case 3 : flags[0] = symbolTable.at(first) / symbolTable.at(second); flags[1] = 0; return flags;
+        }
+    } else if (!(std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end()) && IsHex(second))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = symbolTable.at(first) + getHex(second); flags[1] = 1; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - getHex(second); flags[1] = 1; return flags;
+            case 2 : flags[0] = -1; flags[1] = -1; return flags;
+            case 3 : flags[0] = -1; flags[1] = -1; return flags;
+        }
+    } else if (!(std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end()) && std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end())
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = symbolTable.at(first) + symbolTable.at(second); flags[1] = 1; return flags;
+            case 1 : flags[0] = symbolTable.at(first) + symbolTable.at(second); flags[1] = 1; return flags;
+            case 2 : flags[0] = -1; flags[1] = -1; return flags;
+            case 3 : flags[0] = -1; flags[1] = -1; return flags;
+        }
+    } else if (!(std::find(absLabels.begin(), absLabels.end(), first) != absLabels.end()) && !(std::find(absLabels.begin(), absLabels.end(), second) != absLabels.end()))
+    {
+        switch (op)
+        {
+            case 0 : flags[0] = -1; flags[1] = -1; return flags;
+            case 1 : flags[0] = symbolTable.at(first) - symbolTable.at(second); flags[1] = 0;  return flags;
+            case 2 : flags[0] = -1; flags[1] = -1; return flags;
+            case 3 : flags[0] = -1; flags[1] = -1; return flags;
+        }
+    }
+}
+
 string* passOne::getExpressionGroup(string expression)
 {
-    regex expressionRegex("^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\)([a-zA-Z0-9]{1,8})))$");
+    regex expressionRegex("^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$");
 
     string* groups = new string[3];
     string sp (expression);

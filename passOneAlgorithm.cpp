@@ -1,11 +1,7 @@
 #include "passOneAlgorithm.h"
-#include <bits/stdc++.h>
-#include <regex>
-#include <algorithm>
-#include <string>
-#include <cstdlib>
-using namespace std;
+
 vector<string> namesOftable;
+vector<string> absLabels;
 int addressingCounter = 0;
 string* returnedArray;
 bool startVisited = false;
@@ -221,7 +217,29 @@ void passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecon
                             {
                                 if (returnedArray[3].compare("") != 0)
                                 {
-                                    if (!one.IsHex(returnedArray[3]))
+                                    if (one.expressionChecker(returnedArray[3]))
+                                        {
+                                            string* arr = one.getExpressionGroup(returnedArray[3]);
+
+                                            int* flag = one.expressionEvaluator(arr[0], arr[2], arr[1], absLabels, symbolTable, namesOftable);
+
+                                            if (flag[0] == -2)
+                                            {
+                                                numOfError.push_back(i);
+                                                typeOfError.push_back("undefined label in operand");
+                                                addresses[i] = addressingCounter;
+                                            } else if (flag[0] == -1)
+                                            {
+                                                numOfError.push_back(i);
+                                                typeOfError.push_back("illegal expression");
+                                                addresses[i] = addressingCounter;
+                                            } else
+                                            {
+                                                addresses[i] = addressingCounter;
+                                                addressingCounter = flag[0];
+
+                                            }
+                                        } else if (!one.IsHex(returnedArray[3]))
                                     {
                                         string t = returnedArray[3];
                                         one.toLower(t);
@@ -266,7 +284,36 @@ void passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecon
                                 {
                                     if (returnedArray[3].compare("") != 0)
                                     {
-                                        if (!one.IsHex(returnedArray[3]))
+                                        if (one.expressionChecker(returnedArray[3]))
+                                        {
+                                            string* arr = one.getExpressionGroup(returnedArray[3]);
+
+                                            int* flag = one.expressionEvaluator(arr[0], arr[2], arr[1], absLabels, symbolTable, namesOftable);
+
+                                            if (flag[0] == -2)
+                                            {
+                                                numOfError.push_back(i);
+                                                typeOfError.push_back("undefined label in operand");
+                                                addresses[i] = addressingCounter;
+                                            } else if (flag[0] == -1)
+                                            {
+                                                numOfError.push_back(i);
+                                                typeOfError.push_back("illegal expression");
+                                                addresses[i] = addressingCounter;
+                                            } else
+                                            {
+                                                addresses[i] = addressingCounter;
+                                                string l = returnedArray[1];
+                                                one.toLower(l);
+                                                symbolTable[l] = flag[0];
+
+                                                if (flag[1] == 0)
+                                                {
+                                                  absLabels.push_back(l);
+                                                }
+
+                                            }
+                                        } else if (!one.IsHex(returnedArray[3]))
                                         {
                                             string t = returnedArray[3];
                                             one.toLower(t);
@@ -290,6 +337,7 @@ void passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecon
                                             string opCode = returnedArray[1];
                                             one.toLower(opCode);
                                             symbolTable[opCode] = one.getHex(returnedArray[3]);
+                                            absLabels.push_back(opCode);
                                         }
                                     }
                                     else

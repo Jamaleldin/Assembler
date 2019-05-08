@@ -11,7 +11,7 @@
 	"passOneAlgorithm.h"
 	"PassTwoAlgorithm.h"
 
-1557316059 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.h
+1557316799 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.h
 	<bits/stdc++.h>
 	<regex>
 
@@ -26,7 +26,7 @@
 	<iostream>
 	"passOne.h"
 
-1556313179 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.h
+1557316998 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.h
 	<bits/stdc++.h>
 	<iostream>
 	"passOne.h"
@@ -54,7 +54,63 @@
 	<iostream>
 	<bits/stdc++.h>
 
+1557154429 D
+
 1557315163 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.h
 	<iostream>
 	<bits/stdc++.h>
+
+1557315163 ++.h>
+
+1557158192 source:d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\inoutfile.cpp
+	"InOutFile.h"
+	<bits/stdc++.h>
+	<iostream>
+	"passOne.h"
+
+1557158192 d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\inoutfile.h
+	<bits/stdc++.h>
+	<iostream>
+	"passOne.h"
+
+1557313326 d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\passone.h
+	<bits/stdc++.h>
+	<regex>
+
+1557158192 source:d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\main.cpp
+	<iostream>
+	<bits/stdc++.h>
+	<regex>
+	<algorithm>
+	<string>
+	<cstdlib>
+	"passOne.h"
+	"InOutFile.h"
+	"passOneAlgorithm.h"
+
+1557277499 d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\passonealgorithm.h
+	<bits/stdc++.h>
+	<regex>
+	<algorithm>
+	<string>
+	<cstdlib>
+	"passOne.h"
+
+1557310163 source:d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\passonealgorithm.cpp
+	"passOneAlgorithm.h"
+	<bits/stdc++.h>
+	<regex>
+	<algorithm>
+	<string>
+	<cstdlib>
+
+1557313097 source:d:\myfolders\csed\c_projects\systems programming\assembler4\assembler\passone.cpp
+	"passOne.h"
+	<bits/stdc++.h>
+	<regex>
+
+1557313097 2a7da32ae910f8f928be2529825a2372c93cf
+
+1557316540 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.cpp
+	"PassTwoAlgorithm.h"
 
