@@ -13,7 +13,7 @@ LOOP2    TD      DEVF2
          RD      DEVF2
          SUB     #48
          ADDR    S,A
-gg       equ     5
+gg       equ     loop1-loop2
 ff       lda     #0
          J       *
 DEVF2    BYTE    X'F3'
