@@ -352,7 +352,7 @@ vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
         }
         else
         {
-            programCounter = addresses[i];
+            programCounter = adresses[i];
             getAddressFromSymbol(opCode, operand, symTable, registersTable,
                                  format, &address, &operandBinary, &undefinedSymbolError);
             // this function check if operand != "" and check if found in symTable & get address & generate operandBinary for format 2 and 4
@@ -423,6 +423,4 @@ string* PassTwoAlgorithm::getingLineInfo(string line)
 
     }
     return data;
-}
-
 }

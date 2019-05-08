@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1557318803 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
+1557327543 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
 	<iostream>
 	<bits/stdc++.h>
 	<regex>
@@ -15,7 +15,7 @@
 	<bits/stdc++.h>
 	<regex>
 
-1557316910 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
+1557332360 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
 	"passOne.h"
 
 1557316998 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.cpp
@@ -46,9 +46,10 @@
 
 1557154429 D
 
-1557325616 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.h
+1557332375 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.h
 	<iostream>
 	<bits/stdc++.h>
+	"passOne.h"
 
 1557315163 ++.h>
 

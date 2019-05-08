@@ -19,7 +19,6 @@ class PassTwoAlgorithm
         bool endWith(string const &fullString, string const &ending);
         int getInt(string s);
         bool strIsDigit(string s);
-        bool strIsDigit(string s);
         void decimalToBinary(int decimal, string* binary);
         bool getE(bool flags[]);
         bool getP(bool flags[]);

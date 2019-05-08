@@ -6,7 +6,7 @@ passOne::passOne()
 }
 void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opTable, map<string, string> &regestersOpCode)
 {
-    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x)))$";
+    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x))|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
     /*Map for second format
     ========================*/
     opCodeSecondFormat["ADDR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
@@ -52,10 +52,10 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string,
     ====================*/
     opCodeDirectives["START"] = "^[a-fA-F0-9]{0,4}$";
     opCodeDirectives["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
-    opCodeDirectives["BYTE"] = "^(([X]\\'[a-fA-F0-9]{0,14}\\')|([C]\\'[a-zA-Z0-9]{0,15}\\'))$";
-    opCodeDirectives["RESB"] = "^[0-9]{1,4}$";
-    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7})))$";
-    opCodeDirectives["RESW"] = "^[0-9]{1,4}$";
+    opCodeDirectives["BYTE"] = "^(([X]\\'[a-fA-F0-9]{0,14}\\')|([C]\\'[a-zA-Z0-9]{0,15}\\')|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["RESB"] = "^(([0-9]{1,4})|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["RESW"] = "^(([0-9]{1,4})|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
