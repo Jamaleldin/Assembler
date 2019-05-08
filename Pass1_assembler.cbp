@@ -36,6 +36,8 @@
 		<Unit filename="ExpressionEvaluator.h" />
 		<Unit filename="InOutFile.cpp" />
 		<Unit filename="InOutFile.h" />
+		<Unit filename="PassTwoAlgorithm.cpp" />
+		<Unit filename="PassTwoAlgorithm.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="passOne.cpp" />
 		<Unit filename="passOne.h" />

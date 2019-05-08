@@ -7,6 +7,7 @@
 #include "passOne.h"
 #include "InOutFile.h"
 #include "passOneAlgorithm.h"
+#include "PassTwoAlgorithm.h"
 
 using namespace std;
 

@@ -18,6 +18,8 @@ class passOne
         void toUpper(basic_string<char>& s);
         void toLower(basic_string<char>& s);
         bool IsHex(string& in);
+        bool expressionChecker(string oprand);
+        string* getExpressionGroup(string expression);
 
     protected:
 
