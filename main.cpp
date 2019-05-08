@@ -43,6 +43,6 @@ int main()
     /*doing pass2
     =============*/
     PassTwoAlgorithm passTwo;
-    vector<string> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable);
+    vector<string> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable, pass.getAdresses());
     return 0;
 }
