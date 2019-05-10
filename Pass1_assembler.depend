@@ -157,3 +157,53 @@
 1557331841 source:d:\myfolders\csed\c_projects\systems programming\assembler5\assembler\passone.cpp
 	"passOne.h"
 
+1557525957 source:d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\expressionevaluator.cpp
+	"ExpressionEvaluator.h"
+
+1557525957 d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\expressionevaluator.h
+	<iostream>
+	<bits/stdc++.h>
+
+1557525957 source:d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\inoutfile.cpp
+	"InOutFile.h"
+
+1557525957 d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\inoutfile.h
+	<bits/stdc++.h>
+	<iostream>
+	"passOne.h"
+
+1557525958 d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\passone.h
+	<bits/stdc++.h>
+	<regex>
+
+1557525957 source:d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\main.cpp
+	<iostream>
+	<bits/stdc++.h>
+	<regex>
+	<algorithm>
+	<string>
+	<cstdlib>
+	"passOne.h"
+	"InOutFile.h"
+	"passOneAlgorithm.h"
+	"PassTwoAlgorithm.h"
+
+1557525958 d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\passonealgorithm.h
+	<bits/stdc++.h>
+	<regex>
+	<algorithm>
+	<string>
+	<cstdlib>
+	"passOne.h"
+
+1557525957 d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\passtwoalgorithm.h
+	<iostream>
+	<bits/stdc++.h>
+	"passOne.h"
+
+1557525957 source:d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\passtwoalgorithm.cpp
+	"PassTwoAlgorithm.h"
+
+1557525958 source:d:\myfolders\csed\c_projects\systems programming\assembler6\assembler\passone.cpp
+	"passOne.h"
+
