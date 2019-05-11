@@ -311,8 +311,6 @@ vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
                 //get const value in binary or hexa (na2es a3mlha)
                 //objectCode.push_back(constant);
             } else if(operand != ""){
-                cout<<opCode<<endl;
-                cout<<opTable.at(opCode)<<endl;
                 string opBinary = opTable.at(opCode);
                 programCounter = adresses[i];
                 getAddressFromSymbol(opCode, operand, symTable, registersTable,
