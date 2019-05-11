@@ -10,6 +10,8 @@ class PassTwoAlgorithm
 {
     public:
         PassTwoAlgorithm();
+        void setAbsLabels(vector<string> labels);
+        void setNamesOfTables(vector<string> names);
         vector<string> doPass(vector<string> lines, map<string, int> symTable, map<string, string> opTable, map<string, string> regestersOpCode,int* adresses);
 
     protected:
@@ -30,7 +32,7 @@ class PassTwoAlgorithm
         void getAddressFromSymbol(string opCode, string operand,
         map<string, int> &symTable, map<string, string> &registersTable,
         int format, int* address, string* operandBinary,
-        bool* undefinedSymbolError);
+        bool* undefinedSymbolError, bool* invalidExpression);
         void setBP(int format, int* address, string operand, string* operandBinary,
                              int programCounter, bool baseAvailable, int base,
                              bool* relativeAddressError, bool flags[]);
@@ -39,7 +41,8 @@ class PassTwoAlgorithm
         string flagsToString(bool flags[]);
         void machineCode(string opCode, string opBinary, int format, int* address,
                                    string operand, string* operandBinary, string* machineCodeBinary,
-                                   bool* relativeAddressError, bool* indexedAddressError, bool flags[],
+                                   bool* relativeAddressError, bool* indexedAddressError,
+								   bool* invalidExpression, bool flags[],
                                    int programCounter, bool baseAvailable, int base);
 };
 

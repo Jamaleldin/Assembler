@@ -1,20 +1,18 @@
-.23456789012345678
-.
-         START   0000
-LOOP1    TD      DEVF2
-         JEQ     LOOP1
+.23456789012345678901234567890123456789
+Q1       start   0
+         LDX     #0
          LDA     #0
-         RD      DEVF2
-         SUB     #48
-         MUL     #10
-         RMO     A,S
-LOOP2    TD      DEVF2
-         JEQ     LOOP2
-         RD      DEVF2
-         SUB     #48
-         ADDR    S,A
-gg       equ     loop1-loop2
-ff       lda     #0
-         J       *
-DEVF2    BYTE    X'F3'
-         END
+LOOP     LDA     #test+6
+         MUL     #5
+         ADD     #1
+         STA     DATA,X
+         RMO     X,A
+         ADD     #3
+         COMP    #300
+         RMO     A,X
+         JLT     loop
+DATA     RESW    100
+test     word    1
+         org     test
+da       equ     data
+         end

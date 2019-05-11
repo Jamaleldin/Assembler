@@ -36,6 +36,14 @@ int* passOneAlgorithm::getAdresses()
 {
     return addresses;
 }
+vector<string> passOneAlgorithm::getNamesOfTable()
+{
+    return namesOftable;
+}
+vector<string> passOneAlgorithm::getAbsLabels()
+{
+    return absLabels;
+}
 void passOneAlgorithm::doPass(vector<string>lines,map<string,string> opCodeSecondFormat,map<string,string> opCodeThirdForth,map<string,string> opCodeDirectives)
 {
     passOne one;

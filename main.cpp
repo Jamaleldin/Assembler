@@ -43,6 +43,11 @@ int main()
     /*doing pass2
     =============*/
     PassTwoAlgorithm passTwo;
+    passTwo.setAbsLabels(pass.getAbsLabels());
+    passTwo.setNamesOfTables(pass.getNamesOfTable());
     vector<string> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable, pass.getAdresses());
+    for(unsigned int i = 0; i<opCodes.size();i++){
+        cout<<opCodes.at(i)<<endl;
+    }
     return 0;
 }
