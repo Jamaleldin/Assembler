@@ -119,13 +119,15 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 		string r2B = "";
 		if (opCode == "CLEAR" || opCode == "TIXR") {
 			string r1 = "" + (operand.at(0));
+			parser.toUpper(r1);
 			string r1B = registersTable.at(r1);
 			string r2B = "0000"; //constant in this case
 
 		} else {
-			string r1 = "" + (operand.at(0));
-			string r2 = "" + (operand.at(2));
-
+			string r1(1,operand.at(0));
+			string r2(1,operand.at(2));
+			parser.toUpper(r1);
+            parser.toUpper(r2);
 			string r1B = registersTable.at(r1); //values for example
 			string r2B = registersTable.at(r2);
 		}
@@ -281,44 +283,49 @@ vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
 	int programCounter = 0;
 	vector<string> objectCode;
 	for (unsigned int i = 0; i < lines.size(); i++) {
-		string* returndInfo = getingLineInfo(lines.at(i));
-		int format = getInt(returndInfo[0]);
-		string opCode = returndInfo[1];
-		parser.toUpper(opCode);
-		string operand = returndInfo[2];
-		parser.toLower(operand);
-		string operandBinary = "";
-		string opBinary = opTable.at(opCode); //get the value from opTable
-		int address = 0;
-		bool flags[6] = { };
-		bool undefinedSymbolError = false;
-		bool relativeAddressError = false;
-		bool indexedAddressError = false;
-		bool invalidExpression = false;
-		string machineCodeBinary = "";
-		if (opCode == "BASE") {
-			baseAvailable = true;
-			/*initialize the base variable*/
-		} else if (opCode == "NOBASE") {
-			baseAvailable = false;
-		} else if (opCode == "ORG" || opCode == "EQU" || opCode == "START"
-				|| opCode == "END" || opCode == "RESW" || opCode == "RESB") {
-			continue;
-		} else if (opCode == "WORD" || opCode == "BYTE") {
-			//get const value in binary or hexa (na2es a3mlha)
-			//objectCode.push_back(constant);
-		} else {
-			programCounter = adresses[i];
-			getAddressFromSymbol(opCode, operand, symTable, registersTable,
-					format, &address, &operandBinary, &undefinedSymbolError, &invalidExpression);
-			// this function check if operand != "" and check if found in symTable & get address & generate operandBinary for format 2 and 4
+        if(!parser.commentChecker(lines.at(i)))
+        {
+            string* returndInfo = getingLineInfo(lines.at(i));
+            int format = getInt(returndInfo[0]);
+            string opCode = returndInfo[1];
+            parser.toUpper(opCode);
+            string operand = returndInfo[2];
+            parser.toLower(operand);
+            string operandBinary = "";
+            int address = 0;
+            bool flags[6] = { };
+            bool undefinedSymbolError = false;
+            bool relativeAddressError = false;
+            bool indexedAddressError = false;
+            bool invalidExpression = false;
+            string machineCodeBinary = "";
+            if (opCode == "BASE") {
+                baseAvailable = true;
+                /*initialize the base variable*/
+            } else if (opCode == "NOBASE") {
+                baseAvailable = false;
+            } else if (opCode == "ORG" || opCode == "EQU" || opCode == "START"
+                    || opCode == "END" || opCode == "RESW" || opCode == "RESB") {
+                continue;
+            } else if (opCode == "WORD" || opCode == "BYTE") {
+                //get const value in binary or hexa (na2es a3mlha)
+                //objectCode.push_back(constant);
+            } else if(operand != ""){
+                cout<<opCode<<endl;
+                cout<<opTable.at(opCode)<<endl;
+                string opBinary = opTable.at(opCode);
+                programCounter = adresses[i];
+                getAddressFromSymbol(opCode, operand, symTable, registersTable,
+                        format, &address, &operandBinary, &undefinedSymbolError, &invalidExpression);
+                // this function check if operand != "" and check if found in symTable & get address & generate operandBinary for format 2 and 4
 
-			machineCode(opCode, opBinary, format, &address, operand,
-					&operandBinary, &machineCodeBinary, &relativeAddressError,
-					&indexedAddressError, &invalidExpression, flags, programCounter, baseAvailable,
-					base);
-			objectCode.push_back(machineCodeBinary);
-		}
+                machineCode(opCode, opBinary, format, &address, operand,
+                        &operandBinary, &machineCodeBinary, &relativeAddressError,
+                        &indexedAddressError, &invalidExpression, flags, programCounter, baseAvailable,
+                        base);
+                objectCode.push_back(machineCodeBinary);
+            }
+        }
 	}
 
 	return objectCode;
