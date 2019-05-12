@@ -45,9 +45,9 @@ int main()
     PassTwoAlgorithm passTwo;
     passTwo.setAbsLabels(pass.getAbsLabels());
     passTwo.setNamesOfTables(pass.getNamesOfTable());
-    vector<string> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable, pass.getAdresses());
-    for(unsigned int i = 0; i<opCodes.size();i++){
-        cout<<opCodes.at(i)<<endl;
-    }
+    vector<pair<int, string>> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable, pass.getAdresses());
+     /*writing to outputFile
+    =======================*/
+    IO.wirtingFileFormatOne(lines, passTwo.getLinesOfErrors(), passTwo.getErrors(), pass.getAdresses(), opCodes);
     return 0;
 }

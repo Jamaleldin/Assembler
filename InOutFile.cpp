@@ -59,3 +59,7 @@ void InOutFile::writtingFile(map<string,int>symbolTable, vector<string> lines, v
     }
     outFile.close();
 }
+void InOutFile::wirtingFileFormatOne(vector<string> lines, vector<int> numOfError, vector<string> typeOfError,int* addresses, vector<pair<int, string>> objectCode)
+{
+
+}

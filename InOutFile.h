@@ -12,6 +12,7 @@ class InOutFile
         InOutFile();
         vector<string> readingFile(string inputFileName);
         void writtingFile(map<string,int>symbolTable, vector<string> lines, vector<int> numOfError, vector<string> typeOfError,int* addresses);
+        void wirtingFileFormatOne(vector<string> lines, vector<int> numOfError, vector<string> typeOfError,int* addresses, vector<pair<int, string>> objectCode);
     protected:
 
     private:

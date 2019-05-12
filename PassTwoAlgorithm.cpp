@@ -3,8 +3,18 @@
 passOne parser;
 vector<string> abslabels;
 vector<string> namesOfTable;
+vector<string> errors;
+vector<int> lineOferrors;
 PassTwoAlgorithm::PassTwoAlgorithm() {
 	//ctor
+}
+vector<string> PassTwoAlgorithm::getErrors()
+{
+    return errors;
+}
+vector<int> PassTwoAlgorithm::getLinesOfErrors()
+{
+    return lineOferrors;
 }
 void PassTwoAlgorithm::setAbsLabels(vector<string> labels)
 {
@@ -269,13 +279,13 @@ void PassTwoAlgorithm::machineCode(string opCode, string opBinary, int format,
 	}
 }
 
-vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
+vector<pair<int, string>> PassTwoAlgorithm::doPass(vector<string> lines,
 		map<string, int> symTable, map<string, string> opTable,
 		map<string, string> registersTable, int* adresses) {
 	bool baseAvailable = false;
 	int base = 0; // value of base register (for testing)
 	int programCounter = 0;
-	vector<string> objectCode;
+	vector<pair<int, string>> objectCode;
 	for (unsigned int i = 0; i < lines.size(); i++) {
         if(!parser.commentChecker(lines.at(i)))
         {
@@ -316,7 +326,33 @@ vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
                         operandBinary, machineCodeBinary, &relativeAddressError,
                         &indexedAddressError, &invalidExpression, flags, programCounter, baseAvailable,
                         base);
-                objectCode.push_back(machineCodeBinary);
+                if(undefinedSymbolError)
+                {
+                    errors.push_back("undefinedSymbolError");
+                    lineOferrors.push_back(i);
+                }
+                else if(relativeAddressError)
+                {
+                    errors.push_back("relativeAddressError");
+                    lineOferrors.push_back(i);
+                }
+                else if(indexedAddressError)
+                {
+                    errors.push_back("indexedAddressError");
+                    lineOferrors.push_back(i);
+                }
+                else if(invalidExpression)
+                {
+                    errors.push_back("invalidExpression");
+                    lineOferrors.push_back(i);
+                }
+                else
+                {
+                    pair<int ,string> code;
+                    code.first = i;
+                    code.second = machineCodeBinary;
+                    objectCode.push_back(code);
+                }
             }
         }
 	}
