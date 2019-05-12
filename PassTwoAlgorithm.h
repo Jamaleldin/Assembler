@@ -21,7 +21,7 @@ class PassTwoAlgorithm
         bool endWith(string const &fullString, string const &ending);
         int getInt(string s);
         bool strIsDigit(string s);
-        void decimalToBinary(int decimal, string* binary);
+        void decimalToBinary(int decimal, string& binary);
         bool getE(bool flags[]);
         bool getP(bool flags[]);
         bool getB(bool flags[]);
@@ -31,16 +31,16 @@ class PassTwoAlgorithm
         void setE(string opCode, int format, bool flags[]);
         void getAddressFromSymbol(string opCode, string operand,
         map<string, int> &symTable, map<string, string> &registersTable,
-        int format, int* address, string* operandBinary,
+        int format, int* address, string& operandBinary,
         bool* undefinedSymbolError, bool* invalidExpression);
-        void setBP(int format, int* address, string operand, string* operandBinary,
+        void setBP(int format, int* address, string operand, string& operandBinary,
                              int programCounter, bool baseAvailable, int base,
                              bool* relativeAddressError, bool flags[]);
         void setNI(string operand, bool flags[]);
-        void setX(string operand, bool* indexedAddressError, bool flags[]);
+        void setX(string operand, bool* indexedAddressError, bool flags[], int format);
         string flagsToString(bool flags[]);
         void machineCode(string opCode, string opBinary, int format, int* address,
-                                   string operand, string* operandBinary, string* machineCodeBinary,
+                                   string operand, string& operandBinary, string& machineCodeBinary,
                                    bool* relativeAddressError, bool* indexedAddressError,
 								   bool* invalidExpression, bool flags[],
                                    int programCounter, bool baseAvailable, int base);

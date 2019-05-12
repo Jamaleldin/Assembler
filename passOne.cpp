@@ -101,15 +101,15 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string,
     opTable["TIXR"] = "10111000";
     /*Map for registers
     ===================*/
-    regestersOpCode["A"] = "0000";
-    regestersOpCode["X"] = "0001";
-    regestersOpCode["L"] = "0010";
-    regestersOpCode["B"] = "0011";
-    regestersOpCode["S"] = "0100";
-    regestersOpCode["T"] = "0101";
-    regestersOpCode["F"] = "0110";
-    regestersOpCode["PC"] = "1000";
-    regestersOpCode["SW"] = "1001";
+    regestersOpCode["a"] = "0000";
+    regestersOpCode["x"] = "0001";
+    regestersOpCode["l"] = "0010";
+    regestersOpCode["b"] = "0011";
+    regestersOpCode["s"] = "0100";
+    regestersOpCode["t"] = "0101";
+    regestersOpCode["f"] = "0110";
+    regestersOpCode["pc"] = "1000";
+    regestersOpCode["sw"] = "1001";
 }
 string* passOne::checkingGeneralRegex (string line)
 {

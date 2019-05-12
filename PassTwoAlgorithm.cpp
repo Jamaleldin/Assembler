@@ -37,12 +37,12 @@ bool PassTwoAlgorithm::strIsDigit(string s) {
 	return numOfdigits == s.length();
 }
 
-void PassTwoAlgorithm::decimalToBinary(int decimal, string* binary) {
-	int bitLocation = (*binary).length() - 1;
+void PassTwoAlgorithm::decimalToBinary(int decimal, string& binary) {
+	int bitLocation = binary.length() - 1;
 	for (int i = 0; decimal > 0; i++) {
 		int bit = decimal % 2;
 		char cBit = (bit == 0) ? '0' : '1';
-		(*binary).at(bitLocation) = cBit;
+		binary.at(bitLocation) = cBit;
 		bitLocation--;
 		decimal = decimal / 2;
 	}
@@ -74,12 +74,12 @@ void PassTwoAlgorithm::setE(string opCode, int format, bool flags[]) {
 
 void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 		map<string, int> &symTable, map<string, string> &registersTable,
-		int format, int* address, string* operandBinary,
+		int format, int* address, string& operandBinary,
 		bool* undefinedSymbolError, bool* invalidExpression) {
 	if (operand.at(0) == '@' || operand.at(0) == '#') {
 		operand = operand.substr(1, operand.length() - 1);
 	}
-	if (endWith(operand, ",X") || endWith(operand, ",x")) {
+	if ((endWith(operand, ",X") || endWith(operand, ",x")) && format != 2) {
 		operand = operand.substr(0, operand.length() - 2);
 	}
 	if (operand == "") {
@@ -101,12 +101,12 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 		} else {
 			*address = expression[0];
 			if (format == 3) {
-				*operandBinary = "000000000000"; // will change in setBP
+				operandBinary = "000000000000"; // will change in setBP
 				return;
 
 				return;
 			} else if (format == 4) {
-				*operandBinary = "00000000000000000000";
+				operandBinary = "00000000000000000000";
 				decimalToBinary(*address, operandBinary);
 				return;
 			}
@@ -114,29 +114,23 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 	}
 
 	if (format == 2) {
-		*operandBinary = "00000000";
+		operandBinary = "00000000";
 		string r1B = "";
 		string r2B = "";
 		if (opCode == "CLEAR" || opCode == "TIXR") {
 			string r1 = "" + (operand.at(0));
-			parser.toUpper(r1);
-			string r1B = registersTable.at(r1);
-			string r2B = "0000"; //constant in this case
+            r1B = registersTable.at(r1);
+            r2B = "0000"; //constant in this case
 
 		} else {
 			string r1(1,operand.at(0));
 			string r2(1,operand.at(2));
-			parser.toUpper(r1);
-            parser.toUpper(r2);
-			string r1B = registersTable.at(r1); //values for example
-			string r2B = registersTable.at(r2);
+            r1B = registersTable.at(r1); //values for example
+            r2B = registersTable.at(r2);
 		}
-		for (int i = 0; i < 4; i++) {
-			(*operandBinary).at(i) = r1B.at(i);
-			(*operandBinary).at(i + 4) = r2B.at(i);
-		}
+		operandBinary = r1B + r2B;
 	} else if (format == 3) {
-		*operandBinary = "000000000000"; // will change in setBP
+		operandBinary = "000000000000"; // will change in setBP
 
 		if (strIsDigit(operand)) {
 			*address = getInt(operand);
@@ -148,7 +142,7 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 		}
 
 	} else if (format == 4) {
-		*operandBinary = "00000000000000000000";
+		operandBinary = "00000000000000000000";
 		if (strIsDigit(operand)) {
 			*address = getInt(operand);
 		} else if (symTable.count(operand) == 0) {
@@ -162,7 +156,7 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
 }
 
 void PassTwoAlgorithm::setBP(int format, int* address, string operand,
-		string* operandBinary, int programCounter, bool baseAvailable, int base,
+		string& operandBinary, int programCounter, bool baseAvailable, int base,
 		bool* relativeAddressError, bool flags[]) {
 	if (operand.at(0) == '@' || operand.at(0) == '#') {
 		operand = operand.substr(1, operand.length() - 1);
@@ -227,9 +221,9 @@ void PassTwoAlgorithm::setNI(string operand, bool flags[]) {
 }
 
 void PassTwoAlgorithm::setX(string operand, bool* indexedAddressError,
-		bool flags[]) {
+		bool flags[], int format) {
 	*indexedAddressError = false;
-	if (endWith(operand, ",X") || endWith(operand, ",x")) {
+	if ((endWith(operand, ",X") || endWith(operand, ",x")) && format != 2) {
 		if ((getN(flags) && getI(flags)) || !(getN(flags) || getI(flags))) {
 			flags[2] = true;
 		} else {
@@ -248,18 +242,18 @@ string PassTwoAlgorithm::flagsToString(bool flags[]) {
 }
 
 void PassTwoAlgorithm::machineCode(string opCode, string opBinary, int format,
-		int* address, string operand, string* operandBinary,
-		string* machineCodeBinary, bool* relativeAddressError,
+		int* address, string operand, string& operandBinary,
+		string& machineCodeBinary, bool* relativeAddressError,
 		bool* indexedAddressError, bool* invalidExpression, bool flags[], int programCounter,
 		bool baseAvailable, int base) {
-	*machineCodeBinary = "";
+	machineCodeBinary = "";
 	if (*relativeAddressError || *invalidExpression) {
 		//no machine code
 		return;
 	}
 	if (format == 2) {
-		*machineCodeBinary += opBinary;
-		*machineCodeBinary += *operandBinary;
+		machineCodeBinary += opBinary;
+		machineCodeBinary += operandBinary;
 		return;
 	} else     //(format == 3 || format == 4)
 	{
@@ -267,11 +261,11 @@ void PassTwoAlgorithm::machineCode(string opCode, string opBinary, int format,
 		setBP(format, address, operand, operandBinary, programCounter,
 				baseAvailable, base, relativeAddressError, flags);
 		setNI(operand, flags);
-		setX(operand, indexedAddressError, flags);
-		*machineCodeBinary += opBinary.substr(0, 6);
+		setX(operand, indexedAddressError, flags,format);
+		machineCodeBinary += opBinary.substr(0, 6);
 		string sFlags = flagsToString(flags);
-		*machineCodeBinary += sFlags;
-		*machineCodeBinary += *operandBinary;
+		machineCodeBinary += sFlags;
+		machineCodeBinary += operandBinary;
 	}
 }
 
@@ -312,13 +306,14 @@ vector<string> PassTwoAlgorithm::doPass(vector<string> lines,
                 //objectCode.push_back(constant);
             } else if(operand != ""){
                 string opBinary = opTable.at(opCode);
+                cout<<opCode<<endl;
                 programCounter = adresses[i];
                 getAddressFromSymbol(opCode, operand, symTable, registersTable,
-                        format, &address, &operandBinary, &undefinedSymbolError, &invalidExpression);
+                        format, &address, operandBinary, &undefinedSymbolError, &invalidExpression);
                 // this function check if operand != "" and check if found in symTable & get address & generate operandBinary for format 2 and 4
 
                 machineCode(opCode, opBinary, format, &address, operand,
-                        &operandBinary, &machineCodeBinary, &relativeAddressError,
+                        operandBinary, machineCodeBinary, &relativeAddressError,
                         &indexedAddressError, &invalidExpression, flags, programCounter, baseAvailable,
                         base);
                 objectCode.push_back(machineCodeBinary);
