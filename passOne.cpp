@@ -1,4 +1,6 @@
 #include "passOne.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 passOne::passOne()
 {
@@ -6,7 +8,7 @@ passOne::passOne()
 }
 void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string, string> &opCodeThirdForth, map<string, string> &opCodeDirectives, map<string, string> &opTable, map<string, string> &regestersOpCode)
 {
-    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x))|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    string operandCommonRegex = "^(((@|#)(([a-zA-Z0-9]{1,17})))|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((([a-zA-Z]{1}[a-zA-Z0-9]{0,15}))\\s*\\,\\s*(x))|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
     /*Map for second format
     ========================*/
     opCodeSecondFormat["ADDR"] = "^[ABLSTX]\\s*\\,\\s*[ABLSTX]$";
@@ -52,13 +54,13 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string,
     ====================*/
     opCodeDirectives["START"] = "^[a-fA-F0-9]{0,4}$";
     opCodeDirectives["END"] =  "^((([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(\\*)|((@|#)(([a-zA-Z]{1})([a-zA-Z0-9]{1,6}))))$";
-    opCodeDirectives["BYTE"] = "^(([X]\\'[a-fA-F0-9]{0,14}\\')|([C]\\'[a-zA-Z0-9]{0,15}\\')|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["BYTE"] = "^(([X]\\'[a-fA-F0-9]{0,14}\\')|([C]\\'[a-zA-Z0-9]{0,15}\\')|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["RESB"] = "^(([0-9]{1,4})|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["WORD"] = "^(([0-9]{1,4})|((#|@|-)([0-9]{1,4}))|(([0-9])(\\,)?)|(([a-zA-Z]{1})([a-zA-Z0-9]{1,7}))|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["RESW"] = "^(([0-9]{1,4})|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
-    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|(([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["EQU"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["ORG"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
+    opCodeDirectives["BASE"] = "^((([a-zA-Z]{1})([a-zA-Z0-9]{0,7}))|([a-fA-F0-9]{1,4})|(\\*)|((#|@)?([a-zA-Z0-9]{1,8})(\\+|\\-|\\*|\\\\)(#|@)?([a-zA-Z0-9]{1,8})))$";
     opCodeDirectives["NOBASE"] = "^$";
     /*Map for objectCode
     ====================*/
@@ -114,8 +116,8 @@ void passOne::initializMaps(map<string, string> &opCodeSecondFormat, map<string,
 string* passOne::checkingGeneralRegex (string line)
 {
     regex secondFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+([ABLSTX]\\s*(,\\s*[ABLSTX])?)\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
-    regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.@#]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    regex thirdFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?([a-zA-Z]{1,6})\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
+    regex forthFormat("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)([a-zA-Z]{1,5}))\\s+(((@|#)([a-zA-Z0-9]{1,17}))|([^\\s.]{1,18}))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex returnSub("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?((\\+)?(rsub))\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex endProg("^\\s*(end)(\\s+((\\*)|([a-zA-Z]{1}[a-zA-Z0-9]{1,17})|((@|#)([a-zA-Z]{1}[a-zA-Z0-9]{1,16}))))?\\s*(\\..*)?\\s*$",std::regex_constants::icase);
     regex startProg("^\\s*(([a-zA-Z]{1}[a-zA-Z0-9]{0,7})\\s+){0,1}?(start)\\s+([a-f0-9]{1,18})\\s*(\\..*)?\\s*$",std::regex_constants::icase);
@@ -409,4 +411,30 @@ bool passOne::IsHex(string& in)
         if (!isxdigit(d)) return false;
     }
     return true;
+}
+unsigned long long int passOne::baseToDecimal(char * number, int base) {
+	return strtoull (number, NULL, base);
+
+}
+
+string passOne::decimalToHexa(unsigned long long int decimal) {
+	int temp = decimal, r;
+	string hexa = "";
+	while (temp != 0) {
+		r = temp % 16;
+	    if (r < 10) {
+	    	char d = r + 48;
+			hexa = d + hexa;
+	    } else {
+	    	char d = r + 55;
+	    	hexa = d + hexa;
+	    }
+	    temp = temp / 16;
+	}
+	return hexa;
+}
+
+string passOne::binaryToHexa(char * binary) {
+	unsigned long long int decimal = baseToDecimal(binary, 2);
+	return decimalToHexa(decimal);
 }

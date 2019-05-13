@@ -12,7 +12,7 @@ LOOP     LDA     #test+6
          RMO     A,X
          JLT     loop
 DATA     RESW    100
-test     word    1
+test     byte    c'99'
          org     test
 da       equ     data
          end

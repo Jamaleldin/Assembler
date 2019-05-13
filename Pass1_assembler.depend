@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1557697840 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
+1557786983 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\main.cpp
 	<iostream>
 	<bits/stdc++.h>
 	<regex>
@@ -11,17 +11,23 @@
 	"passOneAlgorithm.h"
 	"PassTwoAlgorithm.h"
 
-1557614289 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.h
+1557769696 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.h
 	<bits/stdc++.h>
 	<regex>
+	<string>
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
 
-1557693001 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
+1557782612 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passone.cpp
 	"passOne.h"
+	<stdio.h>
+	<stdlib.h>
 
-1557697769 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.cpp
+1557788379 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.cpp
 	"InOutFile.h"
 
-1557697775 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.h
+1557780844 d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\inoutfile.h
 	<bits/stdc++.h>
 	<iostream>
 	"passOne.h"
@@ -102,8 +108,10 @@
 
 1557313097 2a7da32ae910f8f928be2529825a2372c93cf
 
-1557697535 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.cpp
+1557782698 source:d:\csed\2ndyear\2ndsemester\systems programming\pass1_assembler\passtwoalgorithm.cpp
 	"PassTwoAlgorithm.h"
+	<cstring>
+	<sstream>
 
 1557331253 source:d:\myfolders\csed\c_projects\systems programming\assembler5\assembler\expressionevaluator.cpp
 	"ExpressionEvaluator.h"

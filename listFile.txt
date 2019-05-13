@@ -1,0 +1,18 @@
+.23456789012345678901234567890123456789
+0         Q1       start   0
+0                  LDX     #0              050000
+3                  LDA     #0              010000
+6         LOOP     LDA     #test+6              01214B
+9                  MUL     #5              210005
+C                  ADD     #1              190001
+F                  STA     DATA,X              0FA010
+12                 RMO     X,A                AC10
+14                 ADD     #3              190003
+17                 COMP    #300              29012C
+1A                 RMO     A,X                AC01
+1C                 JLT     loop              3B2000
+1F        DATA     RESW    100
+14B       test     byte    c'99'                3939
+14D                org     test
+14B       da       equ     data
+14B                end

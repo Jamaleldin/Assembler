@@ -3,17 +3,22 @@
 0                  LDX     #0
 3                  LDA     #0
 6         LOOP     LDA     #test+6
-***unrecognized operation code
-6                  MUL     #5
-9                  ADD     #1
-C                  STA     DATA,X
-F                  RMO     X,A
-11                 ADD     #3
-14                 COMP    #300
-17                 RMO     A,X
-19                 JLT     loop
-1C        DATA     RESW    100
-148       test     word    1
-14B                org     test
-148       da       equ     data
-148                end
+9                  MUL     #5
+C                  ADD     #1
+F                  STA     DATA,X
+12                 RMO     X,A
+14                 ADD     #3
+17                 COMP    #300
+1A                 RMO     A,X
+1C                 JLT     loop
+1F        DATA     RESW    100
+14B       test     byte    c'99'
+14D                org     test
+14B       da       equ     data
+14B                end
+=============================================
+Label     Address   
+da        31        
+data      31        
+loop      6         
+test      331       

@@ -46,8 +46,10 @@ int main()
     passTwo.setAbsLabels(pass.getAbsLabels());
     passTwo.setNamesOfTables(pass.getNamesOfTable());
     vector<pair<int, string>> opCodes = passTwo.doPass(lines, symTable, opTable, regestersOpTable, pass.getAdresses());
-     /*writing to outputFile
+    /*writing to outputFile
     =======================*/
     IO.wirtingFileFormatOne(lines, passTwo.getLinesOfErrors(), passTwo.getErrors(), pass.getAdresses(), opCodes);
+    if(passTwo.getErrors().size() == 0)
+        IO.wirtingFileFormatTwo(lines, pass.getAdresses(), opCodes);
     return 0;
 }

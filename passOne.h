@@ -2,6 +2,11 @@
 #define PASSONE_H
 #include <bits/stdc++.h>
 #include <regex>
+#include <string>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+
 using namespace std;
 
 class passOne
@@ -21,6 +26,9 @@ class passOne
         bool expressionChecker(string operand);
         int* expressionEvaluator(string first, string second, string operation, vector<string> absLabels, map<string,int> symbolTable, vector<string> namesOftable);
         string* getExpressionGroup(string expression);
+        unsigned long long int baseToDecimal(char * number, int base);
+        string decimalToHexa(unsigned long long int decimal);
+        string binaryToHexa(char * binary);
     protected:
 
     private:
