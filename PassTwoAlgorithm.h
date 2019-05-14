@@ -34,7 +34,7 @@ class PassTwoAlgorithm
         void getAddressFromSymbol(string opCode, string operand,
         map<string, int> &symTable, map<string, string> &registersTable,
         int format, int* address, string& operandBinary,
-        bool* undefinedSymbolError, bool* invalidExpression);
+        bool* undefinedSymbolError, bool* invalidExpression, int programCounter);
         void setBP(int format, int* address, string operand, string& operandBinary,
                              int programCounter, bool baseAvailable, int base,
                              bool* relativeAddressError, bool flags[]);

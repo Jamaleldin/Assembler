@@ -1,5 +1,5 @@
 .23456789012345678901234567890123456789
-Q1       start   0
+Q1234567 start   0
          LDX     #0
          LDA     #0
 LOOP     LDA     #test+6
@@ -11,8 +11,9 @@ LOOP     LDA     #test+6
          COMP    #300
          RMO     A,X
          JLT     loop
+         J       *
 DATA     RESW    100
-test     byte    c'99'
+test     byte    c'9'
          org     test
 da       equ     data
          end

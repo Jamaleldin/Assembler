@@ -104,7 +104,7 @@ void PassTwoAlgorithm::setE(string opCode, int format, bool flags[])
 void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
         map<string, int> &symTable, map<string, string> &registersTable,
         int format, int* address, string& operandBinary,
-        bool* undefinedSymbolError, bool* invalidExpression)
+        bool* undefinedSymbolError, bool* invalidExpression, int programCounter)
 {
     if (operand.at(0) == '@' || operand.at(0) == '#')
     {
@@ -185,6 +185,10 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
         {
             *address = getInt(operand);
         }
+        else if (operand == "*")
+        {
+        	*address = programCounter;
+        }
         else if (symTable.count(operand) == 0)
         {
             *address = 0;
@@ -202,6 +206,10 @@ void PassTwoAlgorithm::getAddressFromSymbol(string opCode, string operand,
         if (strIsDigit(operand))
         {
             *address = getInt(operand);
+        }
+        else if (operand == "*")
+        {
+        	*address = programCounter;
         }
         else if (symTable.count(operand) == 0)
         {
@@ -451,9 +459,9 @@ vector<pair<int, string>> PassTwoAlgorithm::doPass(vector<string> lines,
             else if(operand != "")
             {
                 string opBinary = opTable.at(opCode);
-                programCounter = adresses[i];
+                programCounter = adresses[i] + format;
                 getAddressFromSymbol(opCode, operand, symTable, registersTable,
-                                     format, &address, operandBinary, &undefinedSymbolError, &invalidExpression);
+                                     format, &address, operandBinary, &undefinedSymbolError, &invalidExpression, programCounter);
                 // this function check if operand != "" and check if found in symTable & get address & generate operandBinary for format 2 and 4
 
                 machineCode(opCode, opBinary, format, &address, operand,
