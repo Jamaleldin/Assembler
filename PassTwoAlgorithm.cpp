@@ -418,9 +418,13 @@ vector<pair<int, string>> PassTwoAlgorithm::doPass(vector<string> lines,
                     string hexCode = "000000";
                     pair<int,string> code;
                     code.first = i;
-                    char strArr[operand.size()+1];
-                    strcpy(strArr,operand.c_str());
-                    string s = parser.binaryToHexa(strArr);
+                    string op = operand;
+                    if(op.at(0) == '@' || op.at(0) == '#')
+                    {
+                        op = op.substr(1);
+                    }
+                    int number = parser.getInt(op);
+                    string s = parser.decimalToHexa(number);
                     int x = 0;
                     for(int k = hexCode.size() - s.size(); k < hexCode.size(); k++)
                     {
